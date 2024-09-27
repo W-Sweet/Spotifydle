@@ -1,7 +1,8 @@
 # https://www.youtube.com/watch?v=2if5xSaZJlg&list=PL1TBkFFBtagorhLzvm5dCA1cOqJKxnWNz&index=1
 #run with python test.py
 
-from flask import Flask, session, url_for, redirect, request #web framework
+#web framework imports
+from flask import Flask, session, url_for, redirect, request, render_template 
 import os 
 
 from spotipy import Spotify
@@ -48,10 +49,30 @@ def get_playlists():
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
     playlists = sp.current_user_playlists()
-    playlists_info = [(pl['name'], pl['external']['spotify']) for pl in playlists['items']] # for every item in playlists, get name of playlist, the spotify url and store it in playlist_info.
-    playlists_html = '<br> '.join([f'{name}: {url}' for name, url in playlists_info]) #on the website following a linebreak, print the playlist_info.
+    fakeData = [
+        {
+            'name' : 'fun song',
+            'length' : '2:31'
+        } ,
 
-    return playlists_html
+        {
+            'name' : 'mangdela bay',
+            'length' : '1:03:24'
+        } ,
+        {
+            'name' : 'that one album you are forgetting',
+            'length' : 'really long'
+        }
+    ]
+    
+   # data = [(pl['name'], pl['external_urls']['spotify']) for pl in playlists['items']] # for every item in playlists, get name of playlist, the spotify url and store it in playlist_info.
+   # playlists_html = '<br> '.join([f'{name}: {url}' for name, url in playlists_info]) #on the website following a linebreak, print the playlist_info.
+
+    return fakeData
+
+@app.route('/testing')
+def testing():
+    return render_template('index.html', data=get_playlists())
 
 @app.route('/logout')
 def logout():

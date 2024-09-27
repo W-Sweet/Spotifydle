@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+
+<head>
+    <title> Main Page</title>
+
+<body>
+    <h1>
+        This is the Main Page
+    </h1>
+    <ul>
+        {% for item in data %}
+        <li>{{item.name}}</li>
+        <li>{{item.length}}</li>
+        {% endfor %}
+
+    </ul>
+</body>
+</head>
+
+</html>
