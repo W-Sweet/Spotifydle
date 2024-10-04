@@ -48,31 +48,25 @@ def get_playlists():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
+
+
     playlists = sp.current_user_playlists()
-    fakeData = [
-        {
-            'name' : 'fun song',
-            'length' : '2:31'
-        } ,
-
-        {
-            'name' : 'mangdela bay',
-            'length' : '1:03:24'
-        } ,
-        {
-            'name' : 'that one album you are forgetting',
-            'length' : 'really long'
-        }
-    ]
+    for pl in playlists['items']:
+        print(pl['name'])
+        print(pl['external_urls'])
+        currPlayLink = pl['external_url'][1]
+        print(currPlayLink)
+        # for sung in playlist_tracks(pl, 25, 0, None, 'track'):
+        #      print(sung)
     
-   # data = [(pl['name'], pl['external_urls']['spotify']) for pl in playlists['items']] # for every item in playlists, get name of playlist, the spotify url and store it in playlist_info.
-   # playlists_html = '<br> '.join([f'{name}: {url}' for name, url in playlists_info]) #on the website following a linebreak, print the playlist_info.
+    playlists_info = [(pl['name'], pl['external_urls']['spotify']) for pl in playlists['items']] # for every item in playlists, get name of playlist, the spotify url and store it in playlist_info.
+    playlists_html = '<br> '.join([f'{name}: {url}' for name, url in playlists_info]) #on the website following a linebreak, print the playlist_info.
 
-    return fakeData
+    return playlists_info
 
 @app.route('/testing')
 def testing():
-    return render_template('index.html', data=get_playlists())
+    return render_template('index.html', content=get_playlists())
 
 @app.route('/logout')
 def logout():
