@@ -1,4 +1,3 @@
-# https://www.youtube.com/watch?v=2if5xSaZJlg&list=PL1TBkFFBtagorhLzvm5dCA1cOqJKxnWNz&index=1
 #run with python test.py
 
 #web framework imports
@@ -8,6 +7,8 @@ import os
 from spotipy import Spotify
 from spotipy.oauth2 import  SpotifyOAuth
 from spotipy.cache_handler import FlaskSessionCacheHandler
+
+import random
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(64) # create a random key to get session information.
@@ -35,43 +36,48 @@ def home():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
-    return redirect(url_for('get_playlists')) #if logged in, get playlists
+    return redirect(url_for('get_playlist_URLS')) #if logged in, get playlists
 
 @app.route('/callback') #for getting user login code, and prevent logging in every time.
 def callback():
     sp_oauth.get_access_token(request.args['code'])
-    return redirect(url_for('get_playlists'))
+    return redirect(url_for('get_playlist_URLS'))
 
-@app.route('/get_playlists')
-def get_playlists():
+@app.route('/get_playlist_URLS')
+def get_playlist_URLS():
     #first check they are logged inhttps://stackoverflow.com/beta/discussions
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
-
-
     playlists = sp.current_user_playlists()
-    for pl in playlists['items']:
-        print(pl['name'])
-        print(pl['external_urls'])
-        currPlayLink = pl['external_url'][1]
-        print(currPlayLink)
-        # for sung in playlist_tracks(pl, 25, 0, None, 'track'):
-        #      print(sung)
-    
-    playlists_info = [(pl['name'], pl['external_urls']['spotify']) for pl in playlists['items']] # for every item in playlists, get name of playlist, the spotify url and store it in playlist_info.
-    playlists_html = '<br> '.join([f'{name}: {url}' for name, url in playlists_info]) #on the website following a linebreak, print the playlist_info.
-
-    return playlists_info
+    playlistURLS = []
+    for pl in playlists['items']: # for every playlist, print the Name and URL.
+        currPlayLink = pl['external_urls']['spotify'] # URL of current playlist.
+        playlistURLS.append(currPlayLink)
+        playlistURLS.append("In the Body Like A Gave")
+    return playlistURLS
 
 @app.route('/testing')
 def testing():
-    return render_template('index.html', content=get_playlists())
+    print(get_playlist_URLS())          #pickup here
+    #return redirect_uri(url_for('logout'))
+    #return render_template('index.html', content=())
 
 @app.route('/logout')
 def logout():
     session.clear() #log them out
     return redirect(url_for('home')) #kick them back to home
+
+def getRandomSongs(PlaylistURL):
+    AllSongs = []
+    for song in sp.playlist_tracks(PlaylistURL)["items"]: # go through every song in said playlist.
+        Data = [song["track"]["name"]] # name of song
+        AllSongs.append(Data)
+    random_song = random.choice(AllSongs)
+    return random_song
+
+
+
 
 if __name__ == '__main__' :
     app.run(debug=True) #run flask
