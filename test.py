@@ -36,46 +36,57 @@ def home():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
-    return redirect(url_for('get_playlist_URLS')) #if logged in, get playlists
+    return render_template('index.html', playlists = getPlaylistNames()) #if logged in, go to main page.
 
 @app.route('/callback') #for getting user login code, and prevent logging in every time.
 def callback():
     sp_oauth.get_access_token(request.args['code'])
-    return redirect(url_for('get_playlist_URLS'))
+    return render_template('index.html', playlists = getPlaylistNames())
 
-@app.route('/get_playlist_URLS')
+@app.route('/get_playlist_URLS') 
 def get_playlist_URLS():
-    #first check they are logged inhttps://stackoverflow.com/beta/discussions
+    #first check they are logged in 
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
     playlists = sp.current_user_playlists()
-    playlistURLS = []
+    returnProduct = [] # an array of playlist url's 
     for pl in playlists['items']: # for every playlist, print the Name and URL.
         currPlayLink = pl['external_urls']['spotify'] # URL of current playlist.
-        playlistURLS.append(currPlayLink)
-        playlistURLS.append("In the Body Like A Gave")
-    return playlistURLS
+        currName = pl['name']
+        print(currName)
+        returnProduct.append(currPlayLink)
+    return returnProduct
 
-@app.route('/testing')
-def testing():
-    print(get_playlist_URLS())          #pickup here
-    #return redirect_uri(url_for('logout'))
-    #return render_template('index.html', content=())
+@app.route('/select_playlist', methods = ['GET', 'POST']) #method to get selected playlist
+def testing():  
+    selectedPlaylist = request.form.get('pickAPlaylist') # PICK UP HERE https://stackoverflow.com/questions/32019733/getting-value-from-select-tag-using-flask
+    return (str(selectedPlaylist))
 
 @app.route('/logout')
 def logout():
     session.clear() #log them out
     return redirect(url_for('home')) #kick them back to home
 
-def getRandomSongs(PlaylistURL):
+def getRandomSongs(PlaylistURL): #given a playlist url, returns a random song name from it.
     AllSongs = []
+    print(PlaylistURL)
     for song in sp.playlist_tracks(PlaylistURL)["items"]: # go through every song in said playlist.
         Data = [song["track"]["name"]] # name of song
         AllSongs.append(Data)
     random_song = random.choice(AllSongs)
     return random_song
 
+def getPlaylistNames():
+    if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
+        auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
+        return redirect(auth_url)
+    playlists = sp.current_user_playlists()
+    returnProduct = []
+    for pl in playlists['items']:
+        currName = pl['name']
+        returnProduct.append(currName)
+    return returnProduct
 
 
 

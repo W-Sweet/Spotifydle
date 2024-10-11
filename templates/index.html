@@ -6,12 +6,15 @@
 
 <body>
     <h1>
-        This is the Main Page
+        Spotifydle
     </h1>
-    <ul>
-        <li> Hello  {{content[0][0]}}</li>
-        <li> Hai  {{content[0][1]}}</li>
-    </ul>
+    <select name = pickAPlaylist method = "GET" action = "/">
+        <option value ="Select one of the following playlists, {{playlists[0]}}" selected> {{playlists[0]}}</option>
+        {% for playlists in playlists[1:] %}
+            <option value="{{playlists}}">{{playlists}}</option>
+        {% endfor %}
+    </select>
+    <button type ="subtmit Playlist" class="btn btn-default">Go</button>
 </body>
 </head>
 
