@@ -5,16 +5,16 @@
     <title> Main Page</title>
 
 <body>
-    <h1>
-        Spotifydle
-    </h1>
-    <select name = pickAPlaylist method = "GET" action = "/">
-        <option value ="Select one of the following playlists, {{playlists[0]}}" selected> {{playlists[0]}}</option>
-        {% for playlists in playlists[1:] %}
+    <h1>Spotifydle</h1>
+    <b> Select A Playlist </b> <br>
+    <form method = "POST" action = "{{ url_for('select_playlist') }}" class=select_playlist>
+        <select name="pickAPlaylist">
+        {% for playlists in playlists %}
             <option value="{{playlists}}">{{playlists}}</option>
         {% endfor %}
-    </select>
-    <button type ="subtmit Playlist" class="btn btn-default">Go</button>
+        </select>
+    </form>
+    <button type ="subtmit" class="btn btn-default" name="submitButton">Select Playlist</button>
 </body>
 </head>
 

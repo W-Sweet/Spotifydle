@@ -37,11 +37,13 @@ def home():
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
     return render_template('index.html', playlists = getPlaylistNames()) #if logged in, go to main page.
+    #return redirect(url_for('select_playlist')) 
 
 @app.route('/callback') #for getting user login code, and prevent logging in every time.
 def callback():
     sp_oauth.get_access_token(request.args['code'])
     return render_template('index.html', playlists = getPlaylistNames())
+    #return redirect(url_for('select_playlist')) 
 
 @app.route('/get_playlist_URLS') 
 def get_playlist_URLS():
@@ -54,14 +56,25 @@ def get_playlist_URLS():
     for pl in playlists['items']: # for every playlist, print the Name and URL.
         currPlayLink = pl['external_urls']['spotify'] # URL of current playlist.
         currName = pl['name']
-        print(currName)
         returnProduct.append(currPlayLink)
     return returnProduct
 
 @app.route('/select_playlist', methods = ['GET', 'POST']) #method to get selected playlist
-def testing():  
-    selectedPlaylist = request.form.get('pickAPlaylist') # PICK UP HERE https://stackoverflow.com/questions/32019733/getting-value-from-select-tag-using-flask
-    return (str(selectedPlaylist))
+def select_playlist(): 
+    print("HERE AT ALL")
+    value = ""
+    if request.method == 'POST':
+        selectedPlaylist = request.form['pickAPlaylist']
+    return render_template('index.html', playlists = getPlaylistNames())
+    #     selectedPlaylist = request.form.get('pickAPlaylist')
+    #     if selectedPlaylist:
+    #         print("HELPLESS CHILD", selectedPlaylist)
+    #     else:
+    #         print("No playlist selected")
+    #     return("PLAYLIST IS PRINTED")
+    
+    # return("Playlist unselected")
+
 
 @app.route('/logout')
 def logout():
