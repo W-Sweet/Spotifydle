@@ -33,10 +33,12 @@ sp = Spotify(auth_manager=sp_oauth) #where we get the spotify data from.
 #first user logs in with spotify account
 @app.route('/') #root for web application
 def home():
+    return render_template('temp.html')
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
-    return render_template('index.html', playlists = getPlaylistNames()) #if logged in, go to main page.
+    
+    #return render_template('index.html', playlists = getPlaylistNames()) #if logged in, go to main page.
     #return redirect(url_for('select_playlist')) 
 
 @app.route('/callback') #for getting user login code, and prevent logging in every time.
@@ -61,7 +63,6 @@ def get_playlist_URLS():
 
 @app.route('/select_playlist', methods = ['GET', 'POST']) #method to get selected playlist
 def select_playlist(): 
-    print("HERE AT ALL")
     value = ""
     if request.method == 'POST':
         selectedPlaylist = request.form['pickAPlaylist']
@@ -72,7 +73,6 @@ def select_playlist():
     #     else:
     #         print("No playlist selected")
     #     return("PLAYLIST IS PRINTED")
-    
     # return("Playlist unselected")
 
 
