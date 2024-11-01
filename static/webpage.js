@@ -1,4 +1,3 @@
-console.log("Started Website")
 function buttonPressed(){
     console.log("Button was pressed")
     alert('Button was pressed')
@@ -10,7 +9,7 @@ function change(){
 
 document.getElementById('dataButton').addEventListener('click', function () {
     console.log("HERE")
-    fetch('/getPlaylistNames') // run all playlist names. 
+    fetch('/getPlaylistNames', { method: 'POST'}) // run all playlist names. 
         .then(response => response.json())
         .then(data => {
             console.log("PLAYLIST NAMES:", data);
