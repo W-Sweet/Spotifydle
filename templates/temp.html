@@ -1,14 +1,18 @@
 <!doctype html>
-<html>
+<html lang = "en">
 
 <head>
-    <title> Main Page</title>
+    <title> TEST SPOTIFY PLAYLISTS </title>
 
 <body>
     <h1 id="here">Testing</h1>
-    <button onclick="buttonPressed()">TESTBUTTON</button>
-    <script src="webpage.js"></script>
+    <button id ="dataButton">Get your Playlists </button>
+    <script src = "{{ url_for('static', filename='webpage.js')}}"></script>
+    <ul id = "playlistContainer"></ul>
+    
+
 </body>
 </head>
-
+<!-- https://stackoverflow.com/questions/61190321/calling-invoking-a-javascript-function-from-python-a-flask-function-within-html
+https://stackoverflow.com/questions/11178426/how-can-i-pass-data-from-flask-to-javascript-in-a-template -->
 </html>

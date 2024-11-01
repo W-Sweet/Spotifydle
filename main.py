@@ -1,7 +1,7 @@
 #run with python test.py
 
 #web framework imports
-from flask import Flask, session, url_for, redirect, request, render_template 
+from flask import Flask, session, url_for, redirect, request, render_template, jsonify 
 import os 
 
 from spotipy import Spotify
@@ -30,22 +30,35 @@ sp_oauth = SpotifyOAuth(
 
 sp = Spotify(auth_manager=sp_oauth) #where we get the spotify data from.
 
+
+
+
 #first user logs in with spotify account
 @app.route('/') #root for web application
 def home():
-    return render_template('temp.html')
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
-    
-    #return render_template('index.html', playlists = getPlaylistNames()) #if logged in, go to main page.
-    #return redirect(url_for('select_playlist')) 
+    return render_template('temp.html')
+
+
+@app.route('/getPlaylistNames', methods =['POST'])
+def getPlaylistNames():
+    if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
+        auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
+        return redirect(auth_url)
+    playlists = sp.current_user_playlists()
+    returnProduct = []
+    for pl in playlists['items']:
+        currName = pl['name']
+        returnProduct.append(currName)
+    return jsonify(returnProduct)
 
 @app.route('/callback') #for getting user login code, and prevent logging in every time.
 def callback():
     sp_oauth.get_access_token(request.args['code'])
-    return render_template('index.html', playlists = getPlaylistNames())
-    #return redirect(url_for('select_playlist')) 
+    return redirect(url_for('home'))
+
 
 @app.route('/get_playlist_URLS') 
 def get_playlist_URLS():
@@ -89,17 +102,6 @@ def getRandomSongs(PlaylistURL): #given a playlist url, returns a random song na
         AllSongs.append(Data)
     random_song = random.choice(AllSongs)
     return random_song
-
-def getPlaylistNames():
-    if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
-        auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
-        return redirect(auth_url)
-    playlists = sp.current_user_playlists()
-    returnProduct = []
-    for pl in playlists['items']:
-        currName = pl['name']
-        returnProduct.append(currName)
-    return returnProduct
 
 
 
