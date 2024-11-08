@@ -6,10 +6,16 @@
 
 <body>
     <h1 id="here">Testing</h1>
+    <select name = "playlists" id = "playlists"> </select>
     <button id ="dataButton">Get your Playlists </button>
+    <button id = "selectPlaylist" name = "selectPlaylist"> Select Playlist</button>
     <script src = "{{ url_for('static', filename='webpage.js')}}"></script>
+    <p> Your playlists </p>
     <ul id = "playlistContainer"></ul>
+    <p> Random song from each</p>
+    <ul id = "randomSongs"> </ul>
     
+
 
 </body>
 </head>

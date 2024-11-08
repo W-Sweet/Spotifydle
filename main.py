@@ -60,7 +60,7 @@ def callback():
     return redirect(url_for('home'))
 
 
-@app.route('/get_playlist_URLS') 
+@app.route('/get_playlist_URLS', methods = ['POST']) 
 def get_playlist_URLS():
     #first check they are logged in 
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
@@ -70,9 +70,8 @@ def get_playlist_URLS():
     returnProduct = [] # an array of playlist url's 
     for pl in playlists['items']: # for every playlist, print the Name and URL.
         currPlayLink = pl['external_urls']['spotify'] # URL of current playlist.
-        currName = pl['name']
         returnProduct.append(currPlayLink)
-    return returnProduct
+    return jsonify(returnProduct)
 
 @app.route('/select_playlist', methods = ['GET', 'POST']) #method to get selected playlist
 def select_playlist(): 
@@ -80,13 +79,6 @@ def select_playlist():
     if request.method == 'POST':
         selectedPlaylist = request.form['pickAPlaylist']
     return render_template('index.html', playlists = getPlaylistNames())
-    #     selectedPlaylist = request.form.get('pickAPlaylist')
-    #     if selectedPlaylist:
-    #         print("HELPLESS CHILD", selectedPlaylist)
-    #     else:
-    #         print("No playlist selected")
-    #     return("PLAYLIST IS PRINTED")
-    # return("Playlist unselected")
 
 
 @app.route('/logout')
@@ -94,11 +86,20 @@ def logout():
     session.clear() #log them out
     return redirect(url_for('home')) #kick them back to home
 
-def getRandomSongs(PlaylistURL): #given a playlist url, returns a random song name from it.
+@app.route('/getPlaylistSong', methods = ['POST'])
+def getRandomSongROUTE(): #given a playlist url, returns a random song name from it.
+    data = request.get_json()
+    playlist_url = data.get('playlistURL')
+    if playlist_url:
+        random_song = getRandomSongs(playlist_url)
+        return jsonify(random_song)
+    return jsonify({"error": "Playlist URL not provided"}), 400
+
+
+def getRandomSongs(PlaylistURL): 
     AllSongs = []
-    print(PlaylistURL)
-    for song in sp.playlist_tracks(PlaylistURL)["items"]: # go through every song in said playlist.
-        Data = [song["track"]["name"]] # name of song
+    for song in sp.playlist_tracks(PlaylistURL)["items"]:
+        Data = song["track"]["name"]
         AllSongs.append(Data)
     random_song = random.choice(AllSongs)
     return random_song
