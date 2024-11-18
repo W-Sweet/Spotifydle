@@ -39,7 +39,7 @@ def home():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
         return redirect(auth_url)
-    return render_template('temp.html')
+    return render_template('webpage.html')
 
 
 @app.route('/getPlaylistNames', methods =['POST'])

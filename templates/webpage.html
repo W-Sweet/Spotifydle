@@ -6,8 +6,9 @@
 
 <body>
     <h1 id="here">Testing</h1>
-    <select name = "playlists" id = "playlists"> </select>
+    <select name = "playlists" id = "playlists" onchange="PrintOutSelected();"> </select>
     <button id ="dataButton">Get your Playlists </button>
+    <button id = "getSongs" name = "getSongs"> Get Songs</button>
     <button id = "selectPlaylist" name = "selectPlaylist"> Select Playlist</button>
     <script src = "{{ url_for('static', filename='webpage.js')}}"></script>
     <p> Your playlists </p>
@@ -19,6 +20,4 @@
 
 </body>
 </head>
-<!-- https://stackoverflow.com/questions/61190321/calling-invoking-a-javascript-function-from-python-a-flask-function-within-html
-https://stackoverflow.com/questions/11178426/how-can-i-pass-data-from-flask-to-javascript-in-a-template -->
 </html>
