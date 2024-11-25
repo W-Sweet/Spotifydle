@@ -73,6 +73,24 @@ def get_playlist_URLS():
         returnProduct.append(currPlayLink)
     return jsonify(returnProduct)
 
+@app.route('/getPlaylistCover', methods = ['POST'])
+def getPlaylistCover():
+    data = request.get_json()
+    playlist_url = data.get('playlistURL')
+    if playlist_url:
+        cover = getPlaylistCoverMethod(playlist_url)
+        return jsonify(cover)
+    return jsonify({"error": "Playlist URL not provided"}, 400)
+
+def getPlaylistCoverMethod(playlistURL): # given a playlist URL, will return a html link to the cover of the playlist.
+    playlists = sp.current_user_playlists()
+    for pl in playlists['items']:
+        if (pl['external_urls']['spotify'] == playlistURL):
+            print("got correct playlist image")
+            cover = (pl['images'][0]['url'])
+            return cover
+    return 0
+
 @app.route('/select_playlist', methods = ['GET', 'POST']) #method to get selected playlist
 def select_playlist(): 
     value = ""
@@ -86,7 +104,7 @@ def logout():
     session.clear() #log them out
     return redirect(url_for('home')) #kick them back to home
 
-@app.route('/getPlaylistSong', methods = ['POST'])
+@app.route('/getRandomSong', methods = ['POST'])
 def getRandomSongROUTE(): #given a playlist url, returns a random song name from it.
     data = request.get_json()
     playlist_url = data.get('playlistURL')
@@ -96,9 +114,9 @@ def getRandomSongROUTE(): #given a playlist url, returns a random song name from
     return jsonify({"error": "Playlist URL not provided"}), 400
 
 
-def getRandomSongs(PlaylistURL): 
+def getRandomSongs(playlistURL): 
     AllSongs = []
-    for song in sp.playlist_tracks(PlaylistURL)["items"]:
+    for song in sp.playlist_tracks(playlistURL)["items"]:
         Data = song["track"]["name"]
         AllSongs.append(Data)
     random_song = random.choice(AllSongs)

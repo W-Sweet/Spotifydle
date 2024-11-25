@@ -45,29 +45,26 @@ document.getElementById('getSongs').addEventListener('click', function () {
         .then(response => response.json())
         .then(data => {
             data.forEach(URL => {
-                //console.log("URL", URL)
+
                 URLS.push(URL);
             });
 
-            // console.log("URL LENGTH", URLS.length);
+
 
             for (let i = 0; i < URLS.length; i++) {
-                //console.log("i, selectedPlaylist", i, selectedPlaylist);
+
                 if (i == selectedPlaylist) {
                     console.log("IT'S THIS LINK");
-                        fetch('/getPlaylistSong', {
-                            method: 'POST', 
-                            headers: {
-                                'Content-Type' : 'application/json'
-                            },
-                            body: JSON.stringify({playlistURL: URLS[i]})
-                        })
+                    fetch('/getRandomSong', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ playlistURL: URLS[i] })
+                    })
                         .then(response => response.json())
                         .then(songData => {
                             console.log("Random song from playlist:", songData);
-                            // const listItem = document.createElement('li');
-                            // listItem.textContent = songData;
-                            // randomSongs.appendChild(listItem);
 
                         })
 
@@ -77,6 +74,36 @@ document.getElementById('getSongs').addEventListener('click', function () {
         });
 });
 
+document.getElementById('selectedPlaylistCover').addEventListener('click', function () { // when the button is pressed, present the selected playlist cover on the website.
+    var e = document.getElementById('playlists'); //dropdown with all the playlists
+    var selectedPlaylist = e.selectedIndex; // selected playlist
+    const coverHTML = document.getElementById('playlistCover');
+    var URLS = [];
+    console.log("pressed show cover")
+    fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(URL => {
+            URLS.push(URL);
+        });
+        console.log("Got URLS");
+        fetch('/getPlaylistCover', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ playlistURL: URLS[selectedPlaylist] })
+        })
+            .then(response => response.json())
+            .then(playlistCover => {
+                console.log("Playlist Cover:", playlistCover );
+                coverHTML.src = playlistCover;
+                coverHTML.style.display = 'block';
+            })
+            
+        
+    });
+})
 
 
 function PrintOutSelected() {

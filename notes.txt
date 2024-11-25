@@ -1,0 +1,11 @@
+HOW a playlist is stored within sp.current_user_playlists()['items']
+
+{'collaborative': False, 'description': '', 'external_urls': {'spotify': 'https://open.spotify.com/playlist/4fNNng4kYj7JJXvzCUjXTI'}, 'href': 'https://api.spotify.com/v1/playlists/4fNNng4kYj7JJXvzCUjXTI', 'id': '4fNNng4kYj7JJXvzCUjXTI', 'images': [{'height': None, 'url': 'https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8421e67b84aa636ecc86e939c8', 'width': None}], 'name': 'running', 'owner': {'display_name': 'ForRCOS', 'external_urls': {'spotify': 'https://open.spotify.com/user/31nxz2qfjssk2cuboy6l5dwrrma4'}, 'href': 'https://api.spotify.com/v1/users/31nxz2qfjssk2cuboy6l5dwrrma4', 'id': '31nxz2qfjssk2cuboy6l5dwrrma4', 'type': 'user', 'uri': 'spotify:user:31nxz2qfjssk2cuboy6l5dwrrma4'}, 'primary_color': None, 'public': True, 'snapshot_id': 'AAAADgUYnQJvRxqQTNEaoCXvGOjOpcDy', 'tracks': {'href': 'https://api.spotify.com/v1/playlists/4fNNng4kYj7JJXvzCUjXTI/tracks', 'total': 9}, 'type': 'playlist', 'uri': 'spotify:playlist:4fNNng4kYj7JJXvzCUjXTI'}
+
+Tasks left to do:
+    - figure out how to play random song on website
+        - figure out how to start and stop song
+        - attach button to starting and stopping
+        - attach button to play song in intervals, ie for one second, four seconds.
+    - Fix UI 
+        - After logging in, a rotating wheel with all playlist covers which the user can scroll through, below said playlists, is a menu where they may select which "game mode", they wish to play.
