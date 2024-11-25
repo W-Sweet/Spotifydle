@@ -1,5 +1,3 @@
-#run with python test.py
-
 #web framework imports
 from flask import Flask, session, url_for, redirect, request, render_template, jsonify 
 import os 
@@ -30,9 +28,6 @@ sp_oauth = SpotifyOAuth(
 
 sp = Spotify(auth_manager=sp_oauth) #where we get the spotify data from.
 
-
-
-
 #first user logs in with spotify account
 @app.route('/') #root for web application
 def home():
@@ -41,8 +36,13 @@ def home():
         return redirect(auth_url)
     return render_template('webpage.html')
 
+@app.route('/logout') #logout method
+def logout():
+    session.clear() #log them out
+    return redirect(url_for('home')) #kick them back to home
 
-@app.route('/getPlaylistNames', methods =['POST'])
+
+@app.route('/getPlaylistNames', methods =['POST']) # method to get all playlist names
 def getPlaylistNames():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
         auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
@@ -60,7 +60,7 @@ def callback():
     return redirect(url_for('home'))
 
 
-@app.route('/get_playlist_URLS', methods = ['POST']) 
+@app.route('/get_playlist_URLS', methods = ['POST']) #method to get all playlist urls
 def get_playlist_URLS():
     #first check they are logged in 
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
@@ -73,7 +73,7 @@ def get_playlist_URLS():
         returnProduct.append(currPlayLink)
     return jsonify(returnProduct)
 
-@app.route('/getPlaylistCover', methods = ['POST'])
+@app.route('/getPlaylistCover', methods = ['POST']) #route for below method
 def getPlaylistCover():
     data = request.get_json()
     playlist_url = data.get('playlistURL')
@@ -98,14 +98,8 @@ def select_playlist():
         selectedPlaylist = request.form['pickAPlaylist']
     return render_template('index.html', playlists = getPlaylistNames())
 
-
-@app.route('/logout')
-def logout():
-    session.clear() #log them out
-    return redirect(url_for('home')) #kick them back to home
-
-@app.route('/getRandomSong', methods = ['POST'])
-def getRandomSongROUTE(): #given a playlist url, returns a random song name from it.
+@app.route('/getRandomSong', methods = ['POST']) #route for below method
+def getRandomSongROUTE(): 
     data = request.get_json()
     playlist_url = data.get('playlistURL')
     if playlist_url:
@@ -114,10 +108,11 @@ def getRandomSongROUTE(): #given a playlist url, returns a random song name from
     return jsonify({"error": "Playlist URL not provided"}), 400
 
 
-def getRandomSongs(playlistURL): 
+def getRandomSongs(playlistURL):  #method, given a URL, will return a random song from it.
     AllSongs = []
     for song in sp.playlist_tracks(playlistURL)["items"]:
-        Data = song["track"]["name"]
+        print(song, "\n\n\n\n")
+        Data = song["track"]["name"] 
         AllSongs.append(Data)
     random_song = random.choice(AllSongs)
     return random_song
