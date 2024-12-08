@@ -1,3 +1,51 @@
+var currPlaylistDisplayed = 0;
+var playlistCount = 0;
+var URLS = [];
+var covers = [];
+document.addEventListener("DOMContentLoaded", function() { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
+    console.log("Started website, display allCovers")
+    const coverHTML = document.getElementById('allCovers');
+    
+    fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(URL => {
+            URLS.push(URL);
+        });
+        fetch('/getPlaylistCover', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ playlistURL: URLS[currPlaylistDisplayed] })
+        })
+            .then(response => response.json())
+            .then(playlistCover => {
+                covers.push(playlistCover)
+                console.log("Playlist Cover:", playlistCover );
+                coverHTML.src = playlistCover; // set the src of the image on the website, to the selected playlist image. 
+                coverHTML.style.display = 'block';
+            })
+    });
+});
+
+document.getElementById('allCoversButton').addEventListener('click', function () { //if the playlist cover at the top of the page is pressed, we need to cycle to the next playlist image.
+    console.log("current playlist NUM", currPlaylistDisplayed);
+    console.log("current max playlist", playlistCount);
+    const coverHTML = document.getElementById('allCovers');
+    if (currPlaylistDisplayed == playlistCount){
+        currPlaylistDisplayed = 0;
+    }
+    else{
+        currPlaylistDisplayed+=1;
+    }
+    coverHTML.src = covers[currPlaylistDisplayed];
+    coverHTML.style.display = 'block';
+    console.log("Pressed on image");
+    
+});
+
+
 document.getElementById('dataButton').addEventListener('click', function () { //when the "Get your Playlists" button is pressed, fill in the ul, with all the user's playlist names. 
     fetch('/getPlaylistNames', { method: 'POST' }) // run all playlist names. 
         .then(response => response.json())
@@ -6,8 +54,9 @@ document.getElementById('dataButton').addEventListener('click', function () { //
             const playlistContainer = document.getElementById('playlistContainer');
             var select = document.getElementById("playlists")
             playlistContainer.innerHTML = '';
+            var iter = 0;
             data.forEach(name => { // going through and for each playlist adding it as a list object onto the webpage
-                var iter = 0;
+                
                 const listItem = document.createElement('li');
                 listItem.textContent = name;
                 playlistContainer.appendChild(listItem);
@@ -16,7 +65,9 @@ document.getElementById('dataButton').addEventListener('click', function () { //
                 console.log("printing name again, ", toAdd.textContent)
                 select.options[select.options.length] = toAdd; // add to dropdown menu all possible playlists. 
                 iter += 1;
+                
             });
+            playlistCount = iter;
         })
         .catch(error => console.error('Error:', error));
 });
@@ -44,6 +95,9 @@ document.getElementById('getSongs').addEventListener('click', function () { // w
             })
                 .then(response => response.json())
                 .then(songData => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = songData;
+                    randomSongs.appendChild(listItem);
                     console.log("Random song from playlist:", songData); // print out a random song from the selected playlist
                 })
             
