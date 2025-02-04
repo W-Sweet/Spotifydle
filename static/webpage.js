@@ -1,48 +1,64 @@
+var URLS = []; // array containing all the URLS for every playlist
+var covers = []; // array containing all the URLS for the cover of each playlist
 var currPlaylistDisplayed = 0;
 var playlistCount = 0;
-var URLS = [];
-var covers = [];
+
 document.addEventListener("DOMContentLoaded", function() { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
-    console.log("Started website, display allCovers")
-    const coverHTML = document.getElementById('allCovers');
-    
+    console.log("Started website")
+    coverHTML = document.getElementById('allCovers');
     fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
     .then(response => response.json())
     .then(data => {
-        data.forEach(URL => {
+        data.forEach(URL => { // put every URL into a array called URLS.
             URLS.push(URL);
         });
-        fetch('/getPlaylistCover', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ playlistURL: URLS[currPlaylistDisplayed] })
-        })
-            .then(response => response.json())
-            .then(playlistCover => {
-                covers.push(playlistCover)
-                console.log("Playlist Cover:", playlistCover );
-                coverHTML.src = playlistCover; // set the src of the image on the website, to the selected playlist image. 
-                coverHTML.style.display = 'block';
-            })
+
+        Promise.all(
+            URLS.map(url => 
+                fetch('/getPlaylistCover', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ playlistURL: url }) // Use url from map
+                })
+                .then(response => response.json())
+            )
+        ).then(playlistCovers => {
+            covers.push(...playlistCovers); // Store all covers
+            console.log(covers);
+        }).catch(error => console.error('Error fetching covers:', error));
+
+ 
     });
 });
 
 document.getElementById('allCoversButton').addEventListener('click', function () { //if the playlist cover at the top of the page is pressed, we need to cycle to the next playlist image.
-    console.log("current playlist NUM", currPlaylistDisplayed);
-    console.log("current max playlist", playlistCount);
-    const coverHTML = document.getElementById('allCovers');
-    if (currPlaylistDisplayed == playlistCount){
+    console.log("current playlist NUM", currPlaylistDisplayed, " ", covers[currPlaylistDisplayed]);  
+    
+    fetch('/getPlaylistCover', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ playlistURL: URLS[currPlaylistDisplayed] })
+    })
+        .then(response => response.json())
+        .then(playlistCover => {
+            coverHTML.src = covers[currPlaylistDisplayed]; // set the src of the image on the website, to the selected playlist image. 
+            coverHTML.style.display = 'block';
+        })
+    
+    playlistCount = covers.length;
+    if (currPlaylistDisplayed == (playlistCount-1)){
         currPlaylistDisplayed = 0;
     }
     else{
         currPlaylistDisplayed+=1;
     }
-    coverHTML.src = covers[currPlaylistDisplayed];
-    coverHTML.style.display = 'block';
-    console.log("Pressed on image");
     
+    //document.getElementById('allCoversButton').src = covers[currPlaylistDisplayed];
+
 });
 
 
@@ -76,16 +92,12 @@ document.getElementById('getSongs').addEventListener('click', function () { // w
     //before we get a random song from a playlist, we need the url for the playlist.
     console.log("Pressed second button");
     const randomSongs = document.getElementById('randomSongs');
-    var URLS = [];
     var e = document.getElementById('playlists'); //dropdown with all the playlists
     var selectedPlaylist = e.selectedIndex;
     console.log("Selected this index for random song", selectedPlaylist);
     fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then from the array, get the said URL and feed it into getRandomSong, then pring out the random song.
         .then(response => response.json())
         .then(data => {
-            data.forEach(URL => {
-                URLS.push(URL); // get all the URLS
-            });
             fetch('/getRandomSong', {
                 method: 'POST',
                 headers: {
@@ -108,14 +120,10 @@ document.getElementById('selectedPlaylistCover').addEventListener('click', funct
     var e = document.getElementById('playlists'); //dropdown with all the playlists
     var selectedPlaylist = e.selectedIndex; // selected playlist
     const coverHTML = document.getElementById('playlistCover');
-    var URLS = [];
     console.log("pressed show cover")
     fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
     .then(response => response.json())
     .then(data => {
-        data.forEach(URL => {
-            URLS.push(URL);
-        });
         console.log("Got URLS");
         fetch('/getPlaylistCover', {
             method: 'POST',

@@ -68,7 +68,7 @@ def get_playlist_URLS():
         return redirect(auth_url)
     playlists = sp.current_user_playlists()
     returnProduct = [] # an array of playlist url's 
-    for pl in playlists['items']: # for every playlist, print the Name and URL.
+    for pl in playlists['items']: # for every playlist, append them to returnProduct
         currPlayLink = pl['external_urls']['spotify'] # URL of current playlist.
         returnProduct.append(currPlayLink)
     return jsonify(returnProduct)
@@ -86,7 +86,6 @@ def getPlaylistCoverMethod(playlistURL): # given a playlist URL, will return a h
     playlists = sp.current_user_playlists()
     for pl in playlists['items']:
         if (pl['external_urls']['spotify'] == playlistURL):
-            print("got correct playlist image")
             cover = (pl['images'][0]['url'])
             return cover
     return 0
@@ -111,7 +110,6 @@ def getRandomSongROUTE():
 def getRandomSongs(playlistURL):  #method, given a URL, will return a random song from it.
     AllSongs = []
     for song in sp.playlist_tracks(playlistURL)["items"]:
-        print(song, "\n\n\n\n")
         Data = song["track"]["name"] 
         AllSongs.append(Data)
     random_song = random.choice(AllSongs)

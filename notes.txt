@@ -27,3 +27,8 @@ Tasks left to do:
                 - Ie, songs that have no variety within the first 16 seconds, for example the user would listen to the first 1 second of the song, guess, then every second they listen to after that would be the exact same, they would gain no new information to make a guess on the song. 
     - Testing
         - Will also require website hosting.
+
+
+
+
+WORKING ON DISPLAYING IMAGE AT TOP OF WEBPAGE, HAVE IN ARRAY, BUT wONT SHOW, TRIED MOVING INTO BUTTON PRESS FUNCTION, BUT NEED TO DISPLAY FIRST.
