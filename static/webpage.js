@@ -1,6 +1,6 @@
 var URLS = []; // array containing all the URLS for every playlist
 var covers = []; // array containing all the URLS for the cover of each playlist
-var currPlaylistDisplayed = 0;
+var currPlaylistDisplayed = 0; // starts at 0 and goes to max
 var playlistCount = 0;
 
 document.addEventListener("DOMContentLoaded", function() { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
