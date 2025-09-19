@@ -7,6 +7,8 @@ HOW songs are stored within sp.playlist_tracks()['items]
 {'added_at': '2024-10-04T21:00:11Z', 'added_by': {'external_urls': {'spotify': 'https://open.spotify.com/user/31nxz2qfjssk2cuboy6l5dwrrma4'}, 'href': 'https://api.spotify.com/v1/users/31nxz2qfjssk2cuboy6l5dwrrma4', 'id': '31nxz2qfjssk2cuboy6l5dwrrma4', 'type': 'user', 'uri': 'spotify:user:31nxz2qfjssk2cuboy6l5dwrrma4'}, 'is_local': False, 'primary_color': None, 'track': {'preview_url': None, 'available_markets': ['AR', 'AU', 'AT', 'BE', 'BO', 'BR', 'BG', 'CA', 'CL', 'CO', 'CR', 'CY', 'CZ', 'DK', 'DO', 'DE', 'EC', 'EE', 'SV', 'FI', 'FR', 'GR', 'GT', 'HN', 'HK', 'HU', 'IS', 'IE', 'IT', 'LV', 'LT', 'LU', 'MY', 'MT', 'MX', 'NL', 'NZ', 'NI', 'NO', 'PA', 'PY', 'PE', 'PH', 'PL', 'PT', 'SG', 'SK', 'ES', 'SE', 'CH', 'TW', 'TR', 'UY', 'US', 'GB', 'AD', 'LI', 'MC', 'ID', 'JP', 'TH', 'VN', 'RO', 'IL', 'ZA', 'SA', 'AE', 'BH', 'QA', 'OM', 'KW', 'EG', 'MA', 'DZ', 'TN', 'LB', 'JO', 'PS', 'IN', 'BY', 'KZ', 'MD', 'UA', 'AL', 'BA', 'HR', 'ME', 'MK', 'RS', 'SI', 'KR', 'BD', 'PK', 'LK', 'GH', 'KE', 'NG', 'TZ', 'UG', 'AG', 'AM', 'BS', 'BB', 'BZ', 'BT', 'BW', 'BF', 'CV', 'CW', 'DM', 'FJ', 'GM', 'GE', 'GD', 'GW', 'GY', 'HT', 'JM', 'KI', 'LS', 'LR', 'MW', 'MV', 'ML', 'MH', 'FM', 'NA', 'NR', 'NE', 'PW', 'PG', 'WS', 'SM', 'ST', 'SN', 'SC', 'SL', 'SB', 'KN', 'LC', 'VC', 'SR', 'TL', 'TO', 'TT', 'TV', 'VU', 'AZ', 'BN', 'BI', 'KH', 'CM', 'TD', 'KM', 'GQ', 'SZ', 'GA', 'GN', 'KG', 'LA', 'MO', 'MR', 'MN', 'NP', 'RW', 'TG', 'UZ', 'ZW', 'BJ', 'MG', 'MU', 'MZ', 'AO', 'CI', 'DJ', 'ZM', 'CD', 'CG', 'IQ', 'LY', 'TJ', 'VE', 'ET', 'XK'], 'explicit': False, 'type': 'track', 'episode': False, 'track': True, 'album': {'available_markets': ['AR', 'AU', 'AT', 'BE', 'BO', 'BR', 'BG', 'CA', 'CL', 'CO', 'CR', 'CY', 'CZ', 'DK', 'DO', 'DE', 'EC', 'EE', 'SV', 'FI', 'FR', 'GR', 'GT', 'HN', 'HK', 'HU', 'IS', 'IE', 'IT', 'LV', 'LT', 'LU', 'MY', 'MT', 'MX', 'NL', 'NZ', 'NI', 'NO', 'PA', 'PY', 'PE', 'PH', 'PL', 'PT', 'SG', 'SK', 'ES', 'SE', 'CH', 'TW', 'TR', 'UY', 'US', 'GB', 'AD', 'LI', 'MC', 'ID', 'JP', 'TH', 'VN', 'RO', 'IL', 'ZA', 'SA', 'AE', 'BH', 'QA', 'OM', 'KW', 'EG', 'MA', 'DZ', 'TN', 'LB', 'JO', 'PS', 'IN', 'BY', 'KZ', 'MD', 'UA', 'AL', 'BA', 'HR', 'ME', 'MK', 'RS', 'SI', 'KR', 'BD', 'PK', 'LK', 'GH', 'KE', 'NG', 'TZ', 'UG', 'AG', 'AM', 'BS', 'BB', 'BZ', 'BT', 'BW', 'BF', 'CV', 'CW', 'DM', 'FJ', 'GM', 'GE', 'GD', 'GW', 'GY', 'HT', 'JM', 'KI', 'LS', 'LR', 'MW', 'MV', 'ML', 'MH', 'FM', 'NA', 'NR', 'NE', 'PW', 'PG', 'WS', 'SM', 'ST', 'SN', 'SC', 'SL', 'SB', 'KN', 'LC', 'VC', 'SR', 'TL', 'TO', 'TT', 'TV', 'VU', 'AZ', 'BN', 'BI', 'KH', 'CM', 'TD', 'KM', 'GQ', 'SZ', 'GA', 'GN', 'KG', 'LA', 'MO', 'MR', 'MN', 'NP', 'RW', 'TG', 'UZ', 'ZW', 'BJ', 'MG', 'MU', 'MZ', 'AO', 'CI', 'DJ', 'ZM', 'CD', 'CG', 'IQ', 'LY', 'TJ', 'VE', 'ET', 'XK'], 'type': 'album', 'album_type': 'album', 'href': 'https://api.spotify.com/v1/albums/7wOOA7l306K8HfBKfPoafr', 'id': '7wOOA7l306K8HfBKfPoafr', 'images': [{'height': 640, 'url': 'https://i.scdn.co/image/ab67616d0000b273c4f52ef8782f0e8ede4c1aaf', 'width': 640}, {'height': 300, 'url': 'https://i.scdn.co/image/ab67616d00001e02c4f52ef8782f0e8ede4c1aaf', 'width': 300}, {'height': 64, 'url': 'https://i.scdn.co/image/ab67616d00004851c4f52ef8782f0e8ede4c1aaf', 'width': 64}], 'name': 'In Utero', 'release_date': '1993-09-21', 'release_date_precision': 'day', 'uri': 'spotify:album:7wOOA7l306K8HfBKfPoafr', 'artists': [{'external_urls': {'spotify': 'https://open.spotify.com/artist/6olE6TJLqED3rqDCT0FyPh'}, 'href': 'https://api.spotify.com/v1/artists/6olE6TJLqED3rqDCT0FyPh', 'id': '6olE6TJLqED3rqDCT0FyPh', 'name': 'Nirvana', 'type': 'artist', 'uri': 'spotify:artist:6olE6TJLqED3rqDCT0FyPh'}], 'external_urls': {'spotify': 'https://open.spotify.com/album/7wOOA7l306K8HfBKfPoafr'}, 'total_tracks': 12}, 'artists': [{'external_urls': {'spotify': 'https://open.spotify.com/artist/6olE6TJLqED3rqDCT0FyPh'}, 'href': 'https://api.spotify.com/v1/artists/6olE6TJLqED3rqDCT0FyPh', 'id': '6olE6TJLqED3rqDCT0FyPh', 'name': 'Nirvana', 'type': 'artist', 'uri': 'spotify:artist:6olE6TJLqED3rqDCT0FyPh'}], 'disc_number': 1, 'track_number': 12, 'duration_ms': 233173, 'external_ids': {'isrc': 'USGF19960712'}, 'external_urls': {'spotify': 'https://open.spotify.com/track/1Ic9pKxGSJGM0LKeqf6lGe'}, 'href': 'https://api.spotify.com/v1/tracks/1Ic9pKxGSJGM0LKeqf6lGe', 'id': '1Ic9pKxGSJGM0LKeqf6lGe', 'name': 'All Apologies', 'popularity': 71, 'uri': 'spotify:track:1Ic9pKxGSJGM0LKeqf6lGe', 'is_local': False}, 'video_thumbnail': {'url': None}}
 
 Tasks left to do:
+    - add case for user that doesn't have playlists
+    - make usable for other users, in main.py, lines 14-18
     - figure out how to play random song on website
         - figure out how to start and stop song
         - attach button to starting and stopping
@@ -29,8 +31,35 @@ Tasks left to do:
         - Will also require website hosting.
 
 
+Spotipy docs:
+https://spotipy.readthedocs.io/en/2.25.1/
+
+https://www.youtube.com/watch?v=2if5xSaZJlg&t=766s
 
 
-WORKING ON DISPLAYING IMAGE AT TOP OF WEBPAGE, HAVE IN ARRAY, BUT wONT SHOW, TRIED MOVING INTO BUTTON PRESS FUNCTION, BUT NEED TO DISPLAY FIRST.
 
-https://stackoverflow.com/staging-ground/79521358
+
+
+
+
+
+
+2025 NOTES:
+
+Make usable for multiple users
+Play the song
+Stop the song
+Track time that the song has played 
+Playing the right version of the song (finding waveform of the song)
+Allow user to guess song, checks if song is right, if incorrect play the next ‘gate’ of time’ 
+Touch up user interface (ASSUREDLY)
+Create mock up user interface
+Implement User interface based off of mockup
+Add a judging system for songs
+Evaluation of suitableness of song based off of first 16 seconds
+Songs that have little variations within the first 16 seconds
+Songs that are silence for the first x amount of seconds
+Songs a user has added to a playlist but has not listened to. 
+Weighting on random selection algorithm
+Prevent repeated song selections
+Weight towards known songs? (preferably not some random shit that has literally 3 views)
