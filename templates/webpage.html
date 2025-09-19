@@ -21,8 +21,12 @@
     <p> Show Playlist Cover</p>
     <img id = "playlistCover" src = "" style = "max-width: 100%; display: none;">
     <script src = "{{ url_for('static', filename='webpage.js')}}"></script>
-    
 
+    <form>
+        <label for="userGuess">Enter your guess here!</label>
+        <input type="text" id="userGuess" name="userGuess">
+        <input type="submit" value="Submit"><br>
+    </form>
 
 </body>
 </head>
