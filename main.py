@@ -41,7 +41,6 @@ def logout():
     session.clear() #log them out
     return redirect(url_for('home')) #kick them back to home
 
-
 @app.route('/getPlaylistNames', methods =['POST']) # method to get all playlist names
 def getPlaylistNames():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in

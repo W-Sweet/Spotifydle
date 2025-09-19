@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function() { // on website load, g
         data.forEach(URL => { // put every URL into a array called URLS.
             URLS.push(URL);
         });
-
         Promise.all(
             URLS.map(url => 
                 fetch('/getPlaylistCover', {
@@ -28,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function() { // on website load, g
             covers.push(...playlistCovers); // Store all covers
             console.log(covers);
         }).catch(error => console.error('Error fetching covers:', error));
-
  
     });
 });
@@ -63,7 +61,8 @@ document.getElementById('allCoversButton').addEventListener('click', function ()
 
 
 document.getElementById('dataButton').addEventListener('click', function () { //when the "Get your Playlists" button is pressed, fill in the ul, with all the user's playlist names. 
-    fetch('/getPlaylistNames', { method: 'POST' }) // run all playlist names. 
+    fetch('/getPlaylistNames', { method: 'POST' }) // run all playlist names.
+            //console.log("here") 
         .then(response => response.json())
         .then(data => {
             console.log("PLAYLIST NAMES:", data);
@@ -72,7 +71,6 @@ document.getElementById('dataButton').addEventListener('click', function () { //
             playlistContainer.innerHTML = '';
             var iter = 0;
             data.forEach(name => { // going through and for each playlist adding it as a list object onto the webpage
-                
                 const listItem = document.createElement('li');
                 listItem.textContent = name;
                 playlistContainer.appendChild(listItem);
