@@ -1,7 +1,11 @@
 var URLS = []; // array containing all the URLS for every playlist
 var covers = []; // array containing all the URLS for the cover of each playlist
 var currPlaylistDisplayed = 0; // starts at 0 and goes to max
-var playlistCount = 0;
+var playlistCount = 0; // amount of playlists.
+
+var e; //dropdown with all the playlists
+var selectedPlaylist;  // The selected playlist in the drop down menu at the top of the website, gotten from e.
+var playlistIndex; // The index of the currently selected playlist, under the rotating image display.
 var curr_song;
 
 document.addEventListener("DOMContentLoaded", function() { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
@@ -55,15 +59,11 @@ document.getElementById('allCoversButton').addEventListener('click', function ()
     else{
         currPlaylistDisplayed+=1;
     }
-    
-    //document.getElementById('allCoversButton').src = covers[currPlaylistDisplayed];
-
 });
 
 
-document.getElementById('dataButton').addEventListener('click', function () { //when the "Get your Playlists" button is pressed, fill in the ul, with all the user's playlist names. 
+document.getElementById('getPlaylistsButton').addEventListener('click', function () { //when the "Get your Playlists" button is pressed, fill in the ul, with all the user's playlist names. 
     fetch('/getPlaylistNames', { method: 'POST' }) // run all playlist names.
-            //console.log("here") 
         .then(response => response.json())
         .then(data => {
             console.log("PLAYLIST NAMES:", data);
@@ -80,7 +80,6 @@ document.getElementById('dataButton').addEventListener('click', function () { //
                 console.log("printing name again, ", toAdd.textContent)
                 select.options[select.options.length] = toAdd; // add to dropdown menu all possible playlists. 
                 iter += 1;
-                
             });
             playlistCount = iter;
         })
@@ -91,8 +90,8 @@ document.getElementById('getSongs').addEventListener('click', function () { // w
     //before we get a random song from a playlist, we need the url for the playlist.
     console.log("Pressed second button");
     const randomSongs = document.getElementById('randomSongs');
-    var e = document.getElementById('playlists'); //dropdown with all the playlists
-    var selectedPlaylist = e.selectedIndex;
+    e = document.getElementById('playlists'); //dropdown with all the playlists
+    selectedPlaylist = e.selectedIndex;
     console.log("Selected this index for random song", selectedPlaylist);
     fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then from the array, get the said URL and feed it into getRandomSong, then pring out the random song.
         .then(response => response.json())
@@ -117,10 +116,12 @@ document.getElementById('getSongs').addEventListener('click', function () { // w
 });
 
 document.getElementById('selectedPlaylistCover').addEventListener('click', function () { // when the button is pressed, present the selected playlist cover on the website.
-    var e = document.getElementById('playlists'); //dropdown with all the playlists
-    var selectedPlaylist = e.selectedIndex; // selected playlist
+    e = document.getElementById('playlists'); //dropdown with all the playlists
+    selectedPlaylist = e.selectedIndex; // selected playlist
+    playlistIndex = selectedPlaylist;
     const coverHTML = document.getElementById('playlistCover');
     console.log("pressed show cover")
+    console.log("Selected playlist", selectedPlaylist);
     fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
     .then(response => response.json())
     .then(data => {
@@ -141,7 +142,27 @@ document.getElementById('selectedPlaylistCover').addEventListener('click', funct
     });
 })
 
-document.getElementById('playRandom').addEventListener('click', function() { //Begin playing a random song from the selected playlist.
+document.getElementById('playlistCover').addEventListener('click', function() { //Fucntion to allow the playlist cover to be pressed, which will cause it to display the next playlist looping back to the first playlist when we reach the last playlist.
+    const coverHTML = document.getElementById('playlistCover');
+    console.log("Playlist cover pressed"); 
+    if (playlistIndex == (covers.length -1)){ // we are looking at the final playlist.
+        console.log("We are looking at the final playlist and need to loop back to 0.");
+        playlistIndex = 0;
+    }
+    else{ // increment by 1. 
+        console.log("We are not looking at the last playlist");
+        playlistIndex++;
+    }
+    coverHTML.src = covers[playlistIndex]; // re-display the playlist on the website. 
+    coverHTML.style.display = 'block';
+})
+
+document.getElementById('selectPlaylist').addEventListener('click', function() { //when the Select ts playlist button is pressed, it will select a random song from said playlist and show it on the website. 
+
+console.log("Hit select this playlist");
+getRandomSong(playlistIndex).then(song => {
+    console.log("Outside function:", song);
+});
 
 })
 
@@ -155,8 +176,29 @@ function PrintOutSelected() { // whenever a new playlist is selected in the drop
     console.log("SELECTED INDEX", e.selectedIndex);
     var selectedPlaylist = e.options[e.selectedIndex].textContent;
     console.log("Selected playlist", selectedPlaylist);
-
 }
+
+async function getRandomSong(val){ // when passed a playlist index, IE 2 would be the second playlist in the list of a users playlists, the fucntion returns a random song from the second playlist. 
+    console.log("Selected this index for random song", val);
+    const playlistResponse = await fetch('/get_playlist_URLS', { method: 'POST' });
+    const playlistData = await playlistResponse.json();
+
+    // Assuming playlistData contains the array `URLS`
+    const songResponse = await fetch('/getRandomSong', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ playlistURL: playlistData[val] })
+    });
+    const songData = await songResponse.json();
+
+    const listItem = document.createElement('li');
+    listItem.textContent = songData;
+    randomSongs.appendChild(listItem);
+    return songData; // returns a random song based off of val.
+}
+
 
 function guessCheck(){
     var userGuess = document.getElementById('userGuess').value;
