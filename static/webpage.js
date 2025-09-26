@@ -2,6 +2,7 @@ var URLS = []; // array containing all the URLS for every playlist
 var covers = []; // array containing all the URLS for the cover of each playlist
 var currPlaylistDisplayed = 0; // starts at 0 and goes to max
 var playlistCount = 0;
+var curr_song;
 
 document.addEventListener("DOMContentLoaded", function() { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -109,6 +110,7 @@ document.getElementById('getSongs').addEventListener('click', function () { // w
                     listItem.textContent = songData;
                     randomSongs.appendChild(listItem);
                     console.log("Random song from playlist:", songData); // print out a random song from the selected playlist
+                    curr_song = songData; //temporary storage of songData in global variable, for testing song guesses
                 })
             
         });
@@ -143,6 +145,11 @@ document.getElementById('playRandom').addEventListener('click', function() { //B
 
 })
 
+document.getElementById('userGuess').addEventListener('change', guessCheck)
+document.getElementById('userGuessSubmit').addEventListener('click', guessCheck)
+// double triggers guesscheck upon user submitting an answer. I think remove one but want to test to make
+// sure it doesn't break anything before I make a change and commit.
+
 function PrintOutSelected() { // whenever a new playlist is selected in the dropdown, 
     var e = document.getElementById('playlists'); //dropdown with all the playlists
     console.log("SELECTED INDEX", e.selectedIndex);
@@ -150,3 +157,26 @@ function PrintOutSelected() { // whenever a new playlist is selected in the drop
     console.log("Selected playlist", selectedPlaylist);
 
 }
+
+function guessCheck(){
+    var userGuess = document.getElementById('userGuess').value;
+
+    console.log("User Guess:", userGuess); //prints out the user's guess, for debugging purposes
+    console.log("Selected Song:", curr_song); //prints out the current song being guessed, for debugging purposes
+
+    if(userGuess === curr_song){
+        console.log("Good Job!"); //debug statement for testing logic
+    }
+    else{
+        console.log("You SUCK!"); //debug statement for testing logic
+    }
+
+    // console.log(typeof curr_song);
+}
+
+/* 
+    Currently, the guess check will work off of directly comparing the input string to the name of the song
+    as fetched by spotipy. As it is unreasonable to expect the user to be able to get the string value
+    exactly correct, I suggest we eventually implement a song search function in the style of something like
+    bandle.
+*/
