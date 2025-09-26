@@ -2,15 +2,14 @@
 <html lang = "en">
 
 <head>
-    <title> TEST SPOTIFY PLAYLISTS </title>
+    <title> Spotifydle </title>
 
 <body>
-    <!-- <h1 id="here">Spotifydle</h1> -->
     <div id = "allCoversButton">
     <img id = "allCovers" src = "/THEEND.jpg" style = "max-width: fit-content; display: none;">
     </div>
     <select name = "playlists" id = "playlists" onchange="PrintOutSelected();"> </select>
-    <button id ="dataButton">Get your Playlists </button>
+    <button id ="getPlaylistsButton">Get your Playlists </button>
     <button id = "getSongs" name = "getSongs"> Get Random Song</button>
     <button id = "playRandom" name = "playRandom">Play a Random Song</button>
     <button id = "selectedPlaylistCover" name = "selectedPlaylistCover">Show cover</button>
@@ -18,8 +17,9 @@
     <ul id = "playlistContainer"></ul>
     <p> Random song from selected playlist</p>
     <ul id = "randomSongs"> </ul>
-    <p> Show Playlist Cover</p>
-    <img id = "playlistCover" src = "" style = "max-width: 100%; display: none;">
+    <button id = "selectPlaylist" name = "selectPlaylist"> Select this playlist </button>
+    <br> 
+    <input type = "image" src ="" name ="playlistShown" class = "btTxt" id ="playlistCover">
     <script src = "{{ url_for('static', filename='webpage.js')}}"></script>
 
     <form>

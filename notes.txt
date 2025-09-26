@@ -26,9 +26,11 @@ Tasks left to do:
             - Songs that we guess that the user "doesn't remember", ie songs that the user hasn't listened to in over a year, or songs that have very "dull" openings
                 - Similar to silence, maybe check variety of waveforms of songs? Ie, if a songs is just a single unchanging tone for the first 4 seconds, don't put it in the game as the user may be annoyed, when their clues are just the same
             - Songs that give bad clues
-                - Ie, songs that have no variety within the first 16 seconds, for example the user would listen to the first 1 second of the song, guess, then every second they listen to after that would be the exact same, they would gain no new information to make a guess on the song. 
+                - Ie, songs that have no variety within the first 12 seconds, for example the user would listen to the first 1 second of the song, guess, then every second they listen to after that would be the exact same, they would gain no new information to make a guess on the song. 
     - Testing
         - Will also require website hosting.
+
+    - search bar for playlists, IE a user has too many playlists, don't want to scroll through 40 million playlists.
 
 
 Spotipy docs:
