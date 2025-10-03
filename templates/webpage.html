@@ -5,6 +5,11 @@
     <title> Spotifydle </title>
 
 <body>
+
+
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+
+
     <div id = "allCoversButton">
     <img id = "allCovers" src = "/THEEND.jpg" style = "max-width: fit-content; display: none;">
     </div>
@@ -12,7 +17,8 @@
     <button id ="getPlaylistsButton">Get your Playlists </button>
     <button id = "getSongs" name = "getSongs"> Get Random Song</button>
     <button id = "playRandom" name = "playRandom">Play a Random Song</button>
-    <button id = "selectedPlaylistCover" name = "selectedPlaylistCover">Show cover</button>
+    <button id = "selectedPlaylistCover" name = "selectedPlaylistCover">Show selected cover</button>
+    <button id = "createEmbed" name = "createEmbed">Create embed</button>
     <p> Your playlists </p>
     <ul id = "playlistContainer"></ul>
     <p> Random song from selected playlist</p>
@@ -20,8 +26,10 @@
     <button id = "selectPlaylist" name = "selectPlaylist"> Select this playlist </button>
     <br> 
     <input type = "image" src ="" name ="playlistShown" class = "btTxt" id ="playlistCover">
-    <script src = "{{ url_for('static', filename='webpage.js')}}"></script>
-
+    <div id = "embed-iframe"> 
+        <iframe src = "" title = "iframeEmbed"> </iframe>
+    </div>
+        <script src = "{{ url_for('static', filename='webpage.js')}}"></script>
     <form>
         <label for="userGuess">Enter your guess here!</label>
         <input type="text" id="userGuess" name="userGuess">

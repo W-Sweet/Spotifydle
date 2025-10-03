@@ -58,7 +58,6 @@ def callback():
     sp_oauth.get_access_token(request.args['code'])
     return redirect(url_for('home'))
 
-
 @app.route('/get_playlist_URLS', methods = ['POST']) #method to get all playlist urls
 def get_playlist_URLS():
     #first check they are logged in 
@@ -70,6 +69,18 @@ def get_playlist_URLS():
     for pl in playlists['items']: # for every playlist, append them to returnProduct
         currPlayLink = pl['external_urls']['spotify'] # URL of current playlist.
         returnProduct.append(currPlayLink)
+    return jsonify(returnProduct)
+
+@app.route('/get_playlist_URIS', methods= ['POST'])
+def get_playlist_URIS():
+    if not sp_oauth.validate_token(cache_handler.get_cached_token()): #if they haven't logged in
+        auth_url = sp_oauth.get_authorize_url() #push user back into attempting to log in.
+        return redirect(auth_url)
+    playlists = sp.current_user_playlists()
+    returnProduct = []
+    for pl in playlists['items']:
+        currPlayURI = pl['owner'][5]
+        returnProduct.append(currPlayURI)
     return jsonify(returnProduct)
 
 @app.route('/getPlaylistCover', methods = ['POST']) #route for below method
