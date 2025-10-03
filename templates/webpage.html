@@ -26,6 +26,13 @@
     <button id = "selectPlaylist" name = "selectPlaylist"> Select this playlist </button>
     <br> 
     <input type = "image" src ="" name ="playlistShown" class = "btTxt" id ="playlistCover">
+    <label for="userGuess">Enter your guess here!</label>
+    <input type="text" id="userGuess" name="userGuess">
+    <input type="submit" id="userGuessSubmit" value="Submit" hidden><br>
+    <p id="guessCountDisplay" hidden></p>
+
+    <!--   Script loading tag must be at bottom of the page, otherwise js page won't load correctly!   -->
+    <script src = "{{ url_for('static', filename='webpage.js')}}"></script>
     <div id = "embed-iframe"> 
         <iframe src = "" title = "iframeEmbed"> </iframe>
     </div>

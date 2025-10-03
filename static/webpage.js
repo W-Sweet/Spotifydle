@@ -7,6 +7,8 @@ var playlistCount = 0; // amount of playlists.
 var e; //dropdown with all the playlists
 var selectedPlaylist;  // The selected playlist in the drop down menu at the top of the website, gotten from e.
 var playlistIndex; // The index of the currently selected playlist, under the rotating image display.
+var curr_song;
+var current_guesses = -1; // starts at -1, value for use not having a song selected
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -141,6 +143,8 @@ document.getElementById('getSongs').addEventListener('click', function () { // w
                     listItem.textContent = songData;
                     randomSongs.appendChild(listItem);
                     console.log("Random song from playlist:", songData); // print out a random song from the selected playlist
+                    curr_song = songData; //temporary storage of songData in global variable, for testing song guesses
+                    guessCheckToggle(1);
                 })
 
         });
@@ -240,3 +244,68 @@ async function getRandomSong(val) { // when passed a playlist index, IE 2 would 
     return songData; // returns a random song based off of val.
 }
 
+
+function guessCheck(){
+    var userGuess = document.getElementById('userGuess').value;
+
+    console.log("User Guess:", userGuess); //prints out the user's guess, for debugging purposes
+    console.log("Selected Song:", curr_song); //prints out the current song being guessed, for debugging purposes
+
+    if(userGuess === curr_song){
+        console.log("Good Job!"); //debug statement for testing logic
+        console.log("Current Guesses:", current_guesses);
+        guessCheckToggle(0);
+
+    }
+    else{
+        console.log("You SUCK!"); //debug statement for testing logic
+        current_guesses--;
+        if(current_guesses == 0){
+            console.log("You Lose, too bad!")
+            guessCheckToggle(0);
+        }
+        else{
+            console.log("Current Guesses:", current_guesses);
+            updateGuessCountDisplay();
+        }
+        
+    }
+
+    // console.log(typeof curr_song);
+}
+
+//turns the interface for submitting guesses on/off depending on input text string
+//0 toggles guessCheck interface off, 1 toggles guessCheck interface on
+function guessCheckToggle(status){
+    if(status == 0){
+        current_guesses = -1; //sets the guess counter value to the default
+        document.getElementById('userGuessSubmit').hidden = true;   //hides the guess submit button
+    }
+    else{
+        current_guesses = 5; //sets the guess counter value to the max
+        document.getElementById('userGuessSubmit').hidden = false;  //shows the guess submit button
+        document.getElementById('guessCountDisplay').hidden = false;
+    }
+    updateGuessCountDisplay();
+}
+
+function updateGuessCountDisplay(){
+    /* 
+        Guess count display should appear when the user chooses a song to guess. It should disappear when the
+        user chooses a new playlist and they no longer have a song selected. When the user wins or loses, the
+        box should update to reflect the outcome of their game.
+    */
+   if(current_guesses < 0){
+    document.getElementById('guessCountDisplay').innerHTML = "You Lose! Too Bad!";
+   }
+   else{
+    document.getElementById('guessCountDisplay').innerHTML = "Remaining Guesses: " + current_guesses;
+   }
+}
+
+/* 
+    Currently, the guess check will work off of directly comparing the input string to the name of the song
+    as fetched by spotipy. As it is unreasonable to expect the user to be able to get the string value
+    exactly correct, I suggest we eventually implement a song search function in the style of something like
+    bandle.
+*/
