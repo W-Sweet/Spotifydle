@@ -83,6 +83,8 @@ document.getElementById('getPlaylistsButton').addEventListener('click', function
                 iter += 1;
             });
             playlistCount = iter;
+            // main game elements hidden till a playlist is selected
+            document.getElementById('gameBody').hidden = false; 
         })
         .catch(error => console.error('Error:', error));
 });
@@ -140,6 +142,7 @@ document.getElementById('selectedPlaylistCover').addEventListener('click', funct
                 console.log("Playlist Cover:", playlistCover );
                 coverHTML.src = playlistCover; // set the src of the image on the website, to the selected playlist image. 
                 coverHTML.style.display = 'block';
+                document.getElementById('playlistCover').hidden = false;
             })
     });
 })
