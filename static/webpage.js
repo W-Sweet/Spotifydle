@@ -215,8 +215,7 @@ document.getElementById('createEmbed').addEventListener('click', function() {
     };
 })
 
-
-
+document.getElementById('userGuessSubmit').addEventListener('click', guessCheck)
 
 function PrintOutSelected() { // whenever a new playlist is selected in the dropdown, 
     var e = document.getElementById('playlists'); //dropdown with all the playlists
