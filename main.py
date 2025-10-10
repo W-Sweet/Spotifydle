@@ -79,7 +79,8 @@ def get_playlist_URIS():
     playlists = sp.current_user_playlists()
     returnProduct = []
     for pl in playlists['items']:
-        currPlayURI = pl['owner'][5]
+        print(pl)
+        currPlayURI = pl['owner']['uri']
         returnProduct.append(currPlayURI)
     return jsonify(returnProduct)
 
@@ -115,6 +116,12 @@ def getRandomSongROUTE():
         random_song = getRandomSongs(playlist_url)
         return jsonify(random_song)
     return jsonify({"error": "Playlist URL not provided"}), 400
+
+
+
+# @app.route('/start_playback', methods = ['POST'])
+# def playSong(songURI): # upon being passed a song URI, begin playing a song. 
+#     data = 
 
 
 def getRandomSongs(playlistURL):  #method, given a URL, will return a random song from it.

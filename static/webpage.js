@@ -1,5 +1,5 @@
 var URLS = []; // array containing all the URLS for every playlist
-var URIS = []; // array containing all the URIS for every playlist for embedding later. 
+var GlobalURI; // array containing all the URIS for every playlist for embedding later. 
 var covers = []; // array containing all the URLS for the cover of each playlist
 var currPlaylistDisplayed = 0; // starts at 0 and goes to max
 var playlistCount = 0; // amount of playlists.
@@ -37,14 +37,13 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
             }).catch(error => console.error('Error fetching covers:', error));
 
         });
-
-    fetch('/get_playlist_URIS', {method: 'POST'}) // get all playlist URIS and put them in a playlist. 
-        fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
+    
+     fetch('/get_playlist_URIS', {method: 'POST'}) // get all playlist URIS and put them in a playlist. 
         .then(response => response.json())
         .then(data => {
             data.forEach(URI => { // put every URI into a array called URLS.
                 console.log("THIS IS A URI  ", URI);
-                URIS.push(URI);
+                GlobalURI = URI; 
             });
         });
 });
@@ -122,6 +121,8 @@ document.getElementById('getPlaylistsButton').addEventListener('click', function
                         coverHTML.style.display = 'block';
                     })
             });
+    document.getElementById('getPlaylistsButton').onclick = null;
+    document.getElementById('getPlaylistsButton').hidden = true;
 });
 
 document.getElementById('getSongs').addEventListener('click', function () { // when the "Get Random Song" button is pressed, print out to the console a random song.
@@ -200,10 +201,11 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
     console.log("Hit select this playlist");
     getRandomSong(playlistIndex).then(song => {
         console.log("Random song from selected playlist: ", song);
+        // from here want to also get the URI of the randomly selected song. 
     });
 })
 
-document.getElementById('createEmbed').addEventListener('click', function() {
+document.getElementById('createEmbed').addEventListener('click', function() { // when create embed is pressed, embed the selected user playlist onto the webpage. 
     console.log("Show embed button pressed");
     console.log(URIS[playlistIndex]);
     document.getElementById('createEmbed').hidden = false;
@@ -211,13 +213,19 @@ document.getElementById('createEmbed').addEventListener('click', function() {
         console.log("breakfeast right off of the mirror");
         const embedURI = document.getElementById('embed-iframe');
         const options = {
-            uri: URIS[playlistIndex]                                                                                            
+            uri: GlobalURI                                                                                        
         };
         const callback = (EmbedController) => {};
-        IFrameAPI.createController(embedURI, options, callback);
+        IFrameAPI.createController(embedURI, options, callback);    // NEED to refactor how we embed, possibly only embeding song to be played, look at when to get URI. 
     };
 })
 
+
+document.getElementById('playRandom').addEventListener('click', function() {
+    console.log("Pressed play random");
+    // call method for start_playback within main.py, passing URI of selected song. 
+
+})
 document.getElementById('userGuessSubmit').addEventListener('click', guessCheck)
 
 function PrintOutSelected() { // whenever a new playlist is selected in the dropdown, 
@@ -227,8 +235,10 @@ function PrintOutSelected() { // whenever a new playlist is selected in the drop
     console.log("Selected playlist", selectedPlaylist);
 }
 
-async function getRandomSong(val) { // when passed a playlist index, IE 2 would be the second playlist in the list of a users playlists, the fucntion returns a random song from the second playlist. 
-    console.log("Selected this index for random song", val);
+async function getRandomSong(val) { 
+    /*
+    when passed a playlist index, IE 2 would be the second playlist in the list of a users playlists, the fucntion returns a random song from the second playlist. 
+    */
     const playlistResponse = await fetch('/get_playlist_URLS', { method: 'POST' });
     const playlistData = await playlistResponse.json();
 
