@@ -206,6 +206,7 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
 document.getElementById('createEmbed').addEventListener('click', function() {
     console.log("Show embed button pressed");
     console.log(URIS[playlistIndex]);
+    document.getElementById('createEmbed').hidden = false;
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
         console.log("breakfeast right off of the mirror");
         const embedURI = document.getElementById('embed-iframe');
