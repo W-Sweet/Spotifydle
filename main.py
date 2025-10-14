@@ -79,7 +79,7 @@ def get_playlist_URIS():
     playlists = sp.current_user_playlists()
     returnProduct = []
     for pl in playlists['items']:
-        print(pl)
+        # print(pl)
         currPlayURI = pl['owner']['uri']
         returnProduct.append(currPlayURI)
     return jsonify(returnProduct)

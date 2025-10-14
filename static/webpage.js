@@ -1,19 +1,18 @@
 var URLS = []; // array containing all the URLS for every playlist
-var GlobalURI; // array containing all the URIS for every playlist for embedding later. 
-var covers = []; // array containing all the URLS for the cover of each playlist
-var currPlaylistDisplayed = 0; // starts at 0 and goes to max
+var URIS =[]; // array containing all the URIS for every playlist for embedding later. 
+var coverURLS = []; // array containing all the URLS for the cover of each playlist
+
 var playlistCount = 0; // amount of playlists.
 
-var e; //dropdown with all the playlists
-var selectedPlaylist;  // The selected playlist in the drop down menu at the top of the website, gotten from e.
+var selectedDropdownPlaylist;  // The selected playlist in the drop down menu at the top of the website, gotten from e.
 var playlistIndex; // The index of the currently selected playlist, under the rotating image display.
-var curr_song;
+var curr_song; 
 var current_guesses = -1; // starts at -1, value for use not having a song selected
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
     coverHTML = document.getElementById('allCovers');
-    document.getElementById('playlistCover').hidden = true;
+    document.getElementById('playlistImageCover').hidden = true;
     fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
         .then(response => response.json())
         .then(data => {
@@ -32,8 +31,8 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
                         .then(response => response.json())
                 )
             ).then(playlistCovers => {
-                covers.push(...playlistCovers); // Store all covers
-                console.log(covers);
+                coverURLS.push(...playlistCovers); // Store all covers
+                console.log(coverURLS);
             }).catch(error => console.error('Error fetching covers:', error));
 
         });
@@ -43,95 +42,21 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
         .then(data => {
             data.forEach(URI => { // put every URI into a array called URLS.
                 console.log("THIS IS A URI  ", URI);
-                GlobalURI = URI; 
+                URIS = URI; 
             });
         });
 });
 
-// document.addEventListener("load", loadPlaylists());
+document.getElementById('getPlaylistsButton').addEventListener('click', loadPlaylists()) //when the "Get your Playlists" button is pressed, fill in the dropdown, with all the user's playlist names, as well as display the rotating cover display at the bottom of the webpage.
 
-document.getElementById('allCoversButton').addEventListener('click', function () { //if the playlist cover at the top of the page is pressed, we need to cycle to the next playlist image.
-    console.log("current playlist NUM", currPlaylistDisplayed, " ", covers[currPlaylistDisplayed]);
-    fetch('/getPlaylistCover', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ playlistURL: URLS[currPlaylistDisplayed] })
-    })
-        .then(response => response.json())
-        .then(playlistCover => {
-            coverHTML.src = covers[currPlaylistDisplayed]; // set the src of the image on the website, to the selected playlist image. 
-            coverHTML.style.display = 'block';
-        })
 
-    playlistCount = covers.length;
-    if (currPlaylistDisplayed == (playlistCount - 1)) {
-        currPlaylistDisplayed = 0;
-    }
-    else {
-        currPlaylistDisplayed += 1;
-    }
-});
-
-document.getElementById('getPlaylistsButton').addEventListener('click', function () { //when the "Get your Playlists" button is pressed, fill in the dropdown, with all the user's playlist names, as well as display the rotating cover display at the bottom of the webpage.
-    document.getElementById('playlistCover').hidden = false;
-    fetch('/getPlaylistNames', { method: 'POST' }) // run all playlist names.
-        .then(response => response.json())
-        .then(data => {
-            console.log("PLAYLIST NAMES:", data);
-            const playlistContainer = document.getElementById('playlistContainer');
-            var select = document.getElementById("playlists")
-            playlistContainer.innerHTML = '';
-            var iter = 0;
-            data.forEach(name => { // going through and for each playlist adding it as a list object onto the webpage
-                const listItem = document.createElement('li');
-                listItem.textContent = name;
-                playlistContainer.appendChild(listItem);
-                console.log("Adding ", select.options.length, "  ", listItem.textContent)
-                toAdd = new Option(name, iter);
-                console.log("printing name again, ", toAdd.textContent)
-                select.options[select.options.length] = toAdd; // add to dropdown menu all possible playlists. 
-                iter += 1;
-            });
-            playlistCount = iter;
-            // main game elements hidden till a playlist is selected
-            document.getElementById('gameBody').hidden = false; 
-        })
-        selectedPlaylist = 0; // selected playlist
-        playlistIndex = selectedPlaylist;
-        const coverHTML = document.getElementById('playlistCover');
-        console.log("pressed show cover")
-        console.log("Selected playlist", selectedPlaylist);
-        fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
-            .then(response => response.json())
-            .then(data => {
-                console.log("Got URLS");
-                fetch('/getPlaylistCover', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ playlistURL: URLS[selectedPlaylist] })
-                })
-                    .then(response => response.json())
-                    .then(playlistCover => {
-                        console.log("Playlist Cover:", playlistCover);
-                        coverHTML.src = playlistCover; // set the src of the image on the website, to the selected playlist image. 
-                        coverHTML.style.display = 'block';
-                    })
-            });
-    document.getElementById('getPlaylistsButton').onclick = null;
-    document.getElementById('getPlaylistsButton').hidden = true;
-});
-
-document.getElementById('getSongs').addEventListener('click', function () { // when the "Get Random Song" button is pressed, print out to the console a random song.
+document.getElementById('getSongs').addEventListener('click', function () { // when the "Get Random Song" button is pressed, print out to the webpage a random song.
     //before we get a random song from a playlist, we need the url for the playlist.
     console.log("Pressed second button");
     const randomSongs = document.getElementById('randomSongs');
-    e = document.getElementById('playlists'); //dropdown with all the playlists
-    selectedPlaylist = e.selectedIndex;
-    console.log("Selected this index for random song", selectedPlaylist);
+    var e = document.getElementById('playlists'); //dropdown with all the playlists
+    selectedDropdownPlaylist = e.selectedIndex;
+    console.log("Selected this index for random song", selectedDropdownPlaylist);
     fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then from the array, get the said URL and feed it into getRandomSong, then pring out the random song.
         .then(response => response.json())
         .then(data => {
@@ -140,7 +65,7 @@ document.getElementById('getSongs').addEventListener('click', function () { // w
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ playlistURL: URLS[selectedPlaylist] }) // pass to the getRandomSong method in main.py, the URL of the selected playlist.
+                body: JSON.stringify({ playlistURL: URLS[selectedDropdownPlaylist] }) // pass to the getRandomSong method in main.py, the URL of the selected playlist.
             })
                 .then(response => response.json())
                 .then(songData => {
@@ -155,37 +80,10 @@ document.getElementById('getSongs').addEventListener('click', function () { // w
         });
 });
 
-document.getElementById('selectedPlaylistCover').addEventListener('click', function () { // when the show playlist cover button is pressed, present the selected playlist cover on the website. OBSELETE, done now on populating playlists in dropdown menu, or the getPlaylistButton.
-    e = document.getElementById('playlists'); //dropdown with all the playlists
-    selectedPlaylist = e.selectedIndex; // selected playlist
-    playlistIndex = selectedPlaylist;
-    const coverHTML = document.getElementById('playlistCover');
-    console.log("pressed show cover")
-    console.log("Selected playlist", selectedPlaylist);
-    fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
-        .then(response => response.json())
-        .then(data => {
-            console.log("Got URLS");
-            fetch('/getPlaylistCover', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ playlistURL: URLS[selectedPlaylist] })
-            })
-                .then(response => response.json())
-                .then(playlistCover => {
-                    console.log("Playlist Cover:", playlistCover);
-                    coverHTML.src = playlistCover; // set the src of the image on the website, to the selected playlist image. 
-                    coverHTML.style.display = 'block';
-                })
-        });
-})
-
-document.getElementById('playlistCover').addEventListener('click', function () { //Fucntion to allow the playlist cover to be pressed, which will cause it to display the next playlist looping back to the first playlist when we reach the last playlist.
-    const coverHTML = document.getElementById('playlistCover');
+document.getElementById('playlistImageCover').addEventListener('click', function () { //Fucntion to allow the playlist cover to be pressed, which will cause it to display the next playlist looping back to the first playlist when we reach the last playlist.
+    const coverHTML = document.getElementById('playlistImageCover');
     console.log("Playlist cover pressed");
-    if (playlistIndex == (covers.length - 1)) { // we are looking at the final playlist.
+    if (playlistIndex == (coverURLS.length - 1)) { // we are looking at the final playlist.
         console.log("We are looking at the final playlist and need to loop back to 0.");
         playlistIndex = 0;
     }
@@ -193,7 +91,7 @@ document.getElementById('playlistCover').addEventListener('click', function () {
         console.log("We are not looking at the last playlist");
         playlistIndex++;
     }
-    coverHTML.src = covers[playlistIndex]; // re-display the playlist on the website. 
+    coverHTML.src = coverURLS[playlistIndex]; // re-display the playlist on the website. 
     coverHTML.style.display = 'block';
 })
 
@@ -213,7 +111,7 @@ document.getElementById('createEmbed').addEventListener('click', function() { //
         console.log("breakfeast right off of the mirror");
         const embedURI = document.getElementById('embed-iframe');
         const options = {
-            uri: GlobalURI                                                                                        
+            uri: URIS                                                                                        
         };
         const callback = (EmbedController) => {};
         IFrameAPI.createController(embedURI, options, callback);    // NEED to refactor how we embed, possibly only embeding song to be played, look at when to get URI. 
@@ -226,13 +124,14 @@ document.getElementById('playRandom').addEventListener('click', function() {
     // call method for start_playback within main.py, passing URI of selected song. 
 
 })
+
 document.getElementById('userGuessSubmit').addEventListener('click', guessCheck)
 
 function PrintOutSelected() { // whenever a new playlist is selected in the dropdown, 
     var e = document.getElementById('playlists'); //dropdown with all the playlists
     console.log("SELECTED INDEX", e.selectedIndex);
-    var selectedPlaylist = e.options[e.selectedIndex].textContent;
-    console.log("Selected playlist", selectedPlaylist);
+    var selectedDropdownPlaylist = e.options[e.selectedIndex].textContent;
+    console.log("Selected playlist", selectedDropdownPlaylist);
 }
 
 async function getRandomSong(val) { 
@@ -325,7 +224,7 @@ function updateGuessCountDisplay(){
 */
 
 function loadPlaylists(){
-    document.getElementById('playlistCover').hidden = false;
+    document.getElementById('playlistImageCover').hidden = false;
     fetch('/getPlaylistNames', { method: 'POST' }) // run all playlist names.
         .then(response => response.json())
         .then(data => {
@@ -348,11 +247,11 @@ function loadPlaylists(){
             // main game elements hidden till a playlist is selected
             document.getElementById('gameBody').hidden = false; 
         })
-        selectedPlaylist = 0; // selected playlist
-        playlistIndex = selectedPlaylist;
-        const coverHTML = document.getElementById('playlistCover');
+        selectedDropdownPlaylist = 0; // selected playlist
+        playlistIndex = selectedDropdownPlaylist;
+        const coverHTML = document.getElementById('playlistImageCover');
         console.log("pressed show cover")
-        console.log("Selected playlist", selectedPlaylist);
+        console.log("Selected playlist", selectedDropdownPlaylist);
         fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
             .then(response => response.json())
             .then(data => {
@@ -362,7 +261,7 @@ function loadPlaylists(){
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ playlistURL: URLS[selectedPlaylist] })
+                    body: JSON.stringify({ playlistURL: URLS[selectedDropdownPlaylist] })
                 })
                     .then(response => response.json())
                     .then(playlistCover => {

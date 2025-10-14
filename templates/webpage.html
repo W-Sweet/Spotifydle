@@ -10,9 +10,6 @@
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
 
-    <div id = "allCoversButton">
-    <img id = "allCovers" src = "/THEEND.jpg" style = "max-width: fit-content; display: none;">
-    </div>
     <select name = "playlists" id = "playlists" onchange="PrintOutSelected();"> </select>
     <button id ="getPlaylistsButton">Get your Playlists </button>
     <button id = "getSongs" name = "getSongs"> Get Random Song</button>
@@ -29,7 +26,7 @@
         <ul id = "randomSongs"> </ul>
         <button id = "selectPlaylist" name = "selectPlaylist"> Select this playlist </button>
         <br> 
-        <input type = "image" src ="" name ="playlistShown" class = "btTxt" id ="playlistCover" hidden>
+        <input type = "image" src ="" name ="playlistShown" class = "btTxt" id ="playlistImageCover" hidden>
         <!--    Why did we encapsulate the user input in a form tag?    -->
         <form>
             <label for="userGuess">Enter your guess here!</label>
