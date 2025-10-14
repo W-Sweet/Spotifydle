@@ -36,8 +36,9 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
             }).catch(error => console.error('Error fetching covers:', error));
 
         });
-    
-     fetch('/get_playlist_URIS', {method: 'POST'}) // get all playlist URIS and put them in a playlist. 
+
+    fetch('/get_playlist_URIS', {method: 'POST'}) // get all playlist URIS and put them in a playlist. 
+        fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
         .then(response => response.json())
         .then(data => {
             data.forEach(URI => { // put every URI into a array called URLS.
@@ -99,11 +100,10 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
     console.log("Hit select this playlist");
     getRandomSong(playlistIndex).then(song => {
         console.log("Random song from selected playlist: ", song);
-        // from here want to also get the URI of the randomly selected song. 
     });
 })
 
-document.getElementById('createEmbed').addEventListener('click', function() { // when create embed is pressed, embed the selected user playlist onto the webpage. 
+document.getElementById('createEmbed').addEventListener('click', function() {
     console.log("Show embed button pressed");
     console.log(URIS[playlistIndex]);
     document.getElementById('createEmbed').hidden = false;
@@ -114,7 +114,7 @@ document.getElementById('createEmbed').addEventListener('click', function() { //
             uri: URIS                                                                                        
         };
         const callback = (EmbedController) => {};
-        IFrameAPI.createController(embedURI, options, callback);    // NEED to refactor how we embed, possibly only embeding song to be played, look at when to get URI. 
+        IFrameAPI.createController(embedURI, options, callback);
     };
 })
 
@@ -134,10 +134,8 @@ function PrintOutSelected() { // whenever a new playlist is selected in the drop
     console.log("Selected playlist", selectedDropdownPlaylist);
 }
 
-async function getRandomSong(val) { 
-    /*
-    when passed a playlist index, IE 2 would be the second playlist in the list of a users playlists, the fucntion returns a random song from the second playlist. 
-    */
+async function getRandomSong(val) { // when passed a playlist index, IE 2 would be the second playlist in the list of a users playlists, the fucntion returns a random song from the second playlist. 
+    console.log("Selected this index for random song", val);
     const playlistResponse = await fetch('/get_playlist_URLS', { method: 'POST' });
     const playlistData = await playlistResponse.json();
 
