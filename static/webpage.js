@@ -34,7 +34,9 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
                 coverURLS.push(...playlistCovers); // Store all covers
                 console.log(coverURLS);
             }).catch(error => console.error('Error fetching covers:', error));
-
+            
+            // experimental: attempting to call loadPlaylists() on website start with guarauntee that /get_playlist_URLS has been executed
+            loadPlaylists();
         });
 
     fetch('/get_playlist_URIS', {method: 'POST'}) // get all playlist URIS and put them in a playlist. 
@@ -47,9 +49,6 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
             });
         });
 });
-
-document.getElementById('getPlaylistsButton').addEventListener('click', loadPlaylists()) //when the "Get your Playlists" button is pressed, fill in the dropdown, with all the user's playlist names, as well as display the rotating cover display at the bottom of the webpage.
-
 
 document.getElementById('getSongs').addEventListener('click', function () { // when the "Get Random Song" button is pressed, print out to the webpage a random song.
     //before we get a random song from a playlist, we need the url for the playlist.
@@ -250,22 +249,17 @@ function loadPlaylists(){
         const coverHTML = document.getElementById('playlistImageCover');
         console.log("pressed show cover")
         console.log("Selected playlist", selectedDropdownPlaylist);
-        fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
-            .then(response => response.json())
-            .then(data => {
-                console.log("Got URLS");
-                fetch('/getPlaylistCover', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ playlistURL: URLS[selectedDropdownPlaylist] })
-                })
-                    .then(response => response.json())
-                    .then(playlistCover => {
-                        console.log("Playlist Cover:", playlistCover);
-                        coverHTML.src = playlistCover; // set the src of the image on the website, to the selected playlist image. 
-                        coverHTML.style.display = 'block';
-                    })
-            });
-}
+        fetch('/getPlaylistCover', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ playlistURL: URLS[selectedDropdownPlaylist] })
+        })
+        .then(response => response.json())
+        .then(playlistCover => {
+        console.log("Playlist Cover:", playlistCover);
+        coverHTML.src = playlistCover; // set the src of the image on the website, to the selected playlist image. 
+        coverHTML.style.display = 'block';
+        })
+};
