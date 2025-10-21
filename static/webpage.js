@@ -1,9 +1,7 @@
 var URLS = []; // array containing all the URLS for every playlist
-var URIS =[]; // array containing all the URIS for every playlist for embedding later. 
+var URI; // var containing the URI for the user spotify enviornemnt. 
 var coverURLS = []; // array containing all the URLS for the cover of each playlist
-
 var playlistCount = 0; // amount of playlists.
-
 var selectedDropdownPlaylist;  // The selected playlist in the drop down menu at the top of the website, gotten from e.
 var playlistIndex; // The index of the currently selected playlist, under the rotating image display.
 var curr_song; 
@@ -38,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
         });
 
     fetch('/get_playlist_URIS', {method: 'POST'}) // get all playlist URIS and put them in a playlist. 
-        fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
+        fetch('/get_playlist_URIS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
         .then(response => response.json())
         .then(data => {
             data.forEach(URI => { // put every URI into a array called URLS.
@@ -48,38 +46,7 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
         });
 });
 
-document.getElementById('getPlaylistsButton').addEventListener('click', loadPlaylists()) //when the "Get your Playlists" button is pressed, fill in the dropdown, with all the user's playlist names, as well as display the rotating cover display at the bottom of the webpage.
-
-
-document.getElementById('getSongs').addEventListener('click', function () { // when the "Get Random Song" button is pressed, print out to the webpage a random song.
-    //before we get a random song from a playlist, we need the url for the playlist.
-    console.log("Pressed second button");
-    const randomSongs = document.getElementById('randomSongs');
-    var e = document.getElementById('playlists'); //dropdown with all the playlists
-    selectedDropdownPlaylist = e.selectedIndex;
-    console.log("Selected this index for random song", selectedDropdownPlaylist);
-    fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then from the array, get the said URL and feed it into getRandomSong, then pring out the random song.
-        .then(response => response.json())
-        .then(data => {
-            fetch('/getRandomSong', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ playlistURL: URLS[selectedDropdownPlaylist] }) // pass to the getRandomSong method in main.py, the URL of the selected playlist.
-            })
-                .then(response => response.json())
-                .then(songData => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = songData;
-                    randomSongs.appendChild(listItem);
-                    console.log("Random song from playlist:", songData); // print out a random song from the selected playlist
-                    curr_song = songData; //temporary storage of songData in global variable, for testing song guesses
-                    guessCheckToggle(1);
-                })
-
-        });
-});
+document.getElementById('getPlaylistsButton').addEventListener('click', loadPlaylists) //when the "Get your Playlists" button is pressed, fill in the dropdown, with all the user's playlist names, as well as display the rotating cover display at the bottom of the webpage.
 
 document.getElementById('playlistImageCover').addEventListener('click', function () { //Fucntion to allow the playlist cover to be pressed, which will cause it to display the next playlist looping back to the first playlist when we reach the last playlist.
     const coverHTML = document.getElementById('playlistImageCover');
@@ -103,6 +70,7 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
     });
 })
 
+
 document.getElementById('createEmbed').addEventListener('click', function() {
     console.log("Show embed button pressed");
     console.log(URIS[playlistIndex]);
@@ -111,7 +79,7 @@ document.getElementById('createEmbed').addEventListener('click', function() {
         console.log("breakfeast right off of the mirror");
         const embedURI = document.getElementById('embed-iframe');
         const options = {
-            uri: URIS                                                                                        
+            uri: URLS[playlistIndex]                                                            // Start WORKING HERE ON start_playback, the embed is currently added as a URL, try doing start_playback with URLS.                                                                    
         };
         const callback = (EmbedController) => {};
         IFrameAPI.createController(embedURI, options, callback);
@@ -250,22 +218,9 @@ function loadPlaylists(){
         const coverHTML = document.getElementById('playlistImageCover');
         console.log("pressed show cover")
         console.log("Selected playlist", selectedDropdownPlaylist);
-        fetch('/get_playlist_URLS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
-            .then(response => response.json())
-            .then(data => {
-                console.log("Got URLS");
-                fetch('/getPlaylistCover', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ playlistURL: URLS[selectedDropdownPlaylist] })
-                })
-                    .then(response => response.json())
-                    .then(playlistCover => {
-                        console.log("Playlist Cover:", playlistCover);
-                        coverHTML.src = playlistCover; // set the src of the image on the website, to the selected playlist image. 
-                        coverHTML.style.display = 'block';
-                    })
-            });
+        //removed a lot of redundant code that populated the playlistImageCover with the image URLS.
+        for (let i = 0; i < coverURLS.length - 1; i++)
+        coverHTML.src = coverURLS[i]; // set the src of the image on the website, to the selected playlist image. 
+        coverHTML.style.display = 'block';
+            
 }
