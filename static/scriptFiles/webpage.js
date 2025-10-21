@@ -6,6 +6,7 @@ var selectedDropdownPlaylist;  // The selected playlist in the drop down menu at
 var playlistIndex; // The index of the currently selected playlist, under the rotating image display.
 var curr_song; 
 var current_guesses = -1; // starts at -1, value for use not having a song selected
+var win_flag = 0; // flag to let the page know player won game. 0 is false, 1 is true.
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -32,7 +33,9 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
                 coverURLS.push(...playlistCovers); // Store all covers
                 console.log(coverURLS);
             }).catch(error => console.error('Error fetching covers:', error));
-
+            
+            // experimental: attempting to call loadPlaylists() on website start with guarauntee that /get_playlist_URLS has been executed
+            loadPlaylists();
         });
 
     fetch('/get_playlist_URIS', {method: 'POST'}) // get all playlist URIS and put them in a playlist. 
@@ -131,10 +134,9 @@ function guessCheck(){
     console.log("Selected Song:", curr_song); //prints out the current song being guessed, for debugging purposes
 
     if(userGuess === curr_song){
-        console.log("Good Job!"); //debug statement for testing logic
-        console.log("Current Guesses:", current_guesses);
+        console.log("You won, Good Job!"); //debug statement for testing logic
+        win_flag = 1;
         guessCheckToggle(0);
-
     }
     else{
         console.log("You SUCK!"); //debug statement for testing logic
@@ -175,7 +177,11 @@ function updateGuessCountDisplay(){
         box should update to reflect the outcome of their game.
     */
    if(current_guesses < 0){
-    document.getElementById('guessCountDisplay').innerHTML = "You Lose! Too Bad!";
+    if(win_flag == 1){
+        document.getElementById('guessCountDisplay').innerHTML = "You Win! Congratulations!";
+        win_flag = 0;
+    } 
+    else document.getElementById('guessCountDisplay').innerHTML = "You Lose! Too Bad!";
    }
    else{
     document.getElementById('guessCountDisplay').innerHTML = "Remaining Guesses: " + current_guesses;

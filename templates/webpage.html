@@ -3,7 +3,7 @@
 
 <head>
     <title> Spotifydle </title>
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/spotifydle.css') }}">
 <body>
 
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
@@ -25,12 +25,9 @@
         <button id = "selectPlaylist" name = "selectPlaylist"> Select this playlist </button>
         <br> 
         <input type = "image" src ="" name ="playlistShown" class = "btTxt" id ="playlistImageCover" hidden>
-        <!--    Why did we encapsulate the user input in a form tag?    -->
-        <form>
-            <label for="userGuess">Enter your guess here!</label>
-            <input type="text" id="userGuess" name="userGuess">
-            <input type="button" id="userGuessSubmit" value="Submit" hidden><br>
-        </form>
+        <label for="userGuess">Enter your guess here!</label>
+        <input type="text" id="userGuess" name="userGuess">
+        <input type="button" id="userGuessSubmit" value="Submit" hidden><br>
         <p id="guessCountDisplay" hidden></p>
         <div id = "embed-iframe" hidden> 
             <iframe src = "" title = "iframeEmbed"> </iframe>
@@ -38,7 +35,7 @@
     </div>
 
     <!--   Script loading tag must be at bottom of the page, otherwise js page won't load correctly!   -->
-    <script src = "{{ url_for('static', filename='webpage.js')}}"></script>
+    <script src = "{{ url_for('static', filename='scriptFiles/webpage.js')}}"></script>
 
 </body>
 </head>

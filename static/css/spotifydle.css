@@ -1,0 +1,22 @@
+/*  CSS File for the main page of the Spotifydle Web Application.
+    May need to be renamed as we alter the project closer to completion.
+    Handles the visual design of the page where the user has to guess the game. */
+
+body {
+    font-family: 'Lucida Sans', 'Georgia';
+    color: whitesmoke;
+
+    /* background settings, change as seen fit */
+    /* background-color: black; */
+    background-image: linear-gradient(black, #36454F, black);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+#playlistImageCover{
+    border-style: solid;
+    border-width: 0.25rem;
+
+    /* This color is ugly as hell. Still workshopping it. */
+    border-color: #1DB954;
+}
