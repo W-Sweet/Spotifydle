@@ -4,9 +4,10 @@ var coverURLS = []; // array containing all the URLS for the cover of each playl
 var playlistCount = 0; // amount of playlists.
 var selectedDropdownPlaylist;  // The selected playlist in the drop down menu at the top of the website, gotten from e.
 var playlistIndex; // The index of the currently selected playlist, under the rotating image display.
-var curr_song; 
+var curr_song;
 var current_guesses = -1; // starts at -1, value for use not having a song selected
 var win_flag = 0; // flag to let the page know player won game. 0 is false, 1 is true.
+var has_embed = 0;
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -33,18 +34,18 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
                 coverURLS.push(...playlistCovers); // Store all covers
                 console.log(coverURLS);
             }).catch(error => console.error('Error fetching covers:', error));
-            
+
             // experimental: attempting to call loadPlaylists() on website start with guarauntee that /get_playlist_URLS has been executed
             loadPlaylists();
         });
 
-    fetch('/get_playlist_URIS', {method: 'POST'}) // get all playlist URIS and put them in a playlist. 
-        fetch('/get_playlist_URIS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
+    fetch('/get_playlist_URIS', { method: 'POST' }) // get all playlist URIS and put them in a playlist. 
+    fetch('/get_playlist_URIS', { method: 'POST' }) // get Playlists URLS, and put them in a array, then go through the array and find the right link.
         .then(response => response.json())
         .then(data => {
             data.forEach(URI => { // put every URI into a array called URLS.
                 console.log("THIS IS A URI  ", URI);
-                URIS = URI; 
+                URIS = URI;
             });
         });
 });
@@ -74,26 +75,53 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
 })
 
 
-document.getElementById('createEmbed').addEventListener('click', function() {
+document.getElementById('createEmbed').addEventListener('click', function () {
     console.log("Show embed button pressed");
-    console.log(URIS[playlistIndex]);
     document.getElementById('createEmbed').hidden = false;
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        console.log("breakfeast right off of the mirror");
         const embedURI = document.getElementById('embed-iframe');
-        const options = {
-            uri: URLS[playlistIndex]                                                            // Start WORKING HERE ON start_playback, the embed is currently added as a URL, try doing start_playback with URLS.                                                                    
-        };
-        const callback = (EmbedController) => {};
+        let options = {uri: URLS[playlistIndex]}
+        const callback = (EmbedController) => { };
+        // console.log("HERE 2", options, "HE IS HERE", typeof(options))
+        // let secondVal = options.uri.replace("open", "player")
+        // console.log("CLIPPING", secondVal)
         IFrameAPI.createController(embedURI, options, callback);
     };
+    has_embed = 1; // we now have an embed and attempt playing a song.
 })
 
 
-document.getElementById('playRandom').addEventListener('click', function() {
-    console.log("Pressed play random");
-    // call method for start_playback within main.py, passing URI of selected song. 
 
+
+document.getElementById('playRandom').addEventListener('click', function () {    // https://web.archive.org/web/20191026192215/https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
+    /* 
+    Upon pressing the "Play a Random Song" button, the js will call the python function 
+    '/start_playback' which will start playback of a random song on the playlist.
+    */
+    
+    console.log("Pressed play random");
+    if (has_embed == 1) {
+        console.log("Attempting to play")
+        /* call python function for start_playback with 
+            device_id - (should be left blank?)        
+            context_uri - should be spotify context uri to play? Should be the playlist URI? 
+            uris - don't add
+            offset - offsets by track, this is how we would select the random song? 
+            position_ms - indicates how far into the song to start playback
+        */
+        fetch('/start_playback', { // works but we don't have premium...so.....uh.....uh....
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                playlistURI: JSON.stringify(URI),
+                offset: JSON.stringify(1),
+                position_ms: JSON.stringify(0)
+            })
+        });
+
+    }
 })
 
 document.getElementById('userGuessSubmit').addEventListener('click', guessCheck)
@@ -127,29 +155,29 @@ async function getRandomSong(val) { // when passed a playlist index, IE 2 would 
 }
 
 
-function guessCheck(){
+function guessCheck() {
     var userGuess = document.getElementById('userGuess').value;
 
     console.log("User Guess:", userGuess); //prints out the user's guess, for debugging purposes
     console.log("Selected Song:", curr_song); //prints out the current song being guessed, for debugging purposes
 
-    if(userGuess === curr_song){
+    if (userGuess === curr_song) {
         console.log("You won, Good Job!"); //debug statement for testing logic
         win_flag = 1;
         guessCheckToggle(0);
     }
-    else{
+    else {
         console.log("You SUCK!"); //debug statement for testing logic
         current_guesses--;
-        if(current_guesses == 0){
+        if (current_guesses == 0) {
             console.log("You Lose, too bad!")
             guessCheckToggle(0);
         }
-        else{
+        else {
             console.log("Current Guesses:", current_guesses);
             updateGuessCountDisplay();
         }
-        
+
     }
 
     // console.log(typeof curr_song);
@@ -157,12 +185,12 @@ function guessCheck(){
 
 //turns the interface for submitting guesses on/off depending on input text string
 //0 toggles guessCheck interface off, 1 toggles guessCheck interface on
-function guessCheckToggle(status){
-    if(status == 0){
+function guessCheckToggle(status) {
+    if (status == 0) {
         current_guesses = -1; //sets the guess counter value to the default
         document.getElementById('userGuessSubmit').hidden = true;   //hides the guess submit button
     }
-    else{
+    else {
         current_guesses = 5; //sets the guess counter value to the max
         document.getElementById('userGuessSubmit').hidden = false;  //shows the guess submit button
         document.getElementById('guessCountDisplay').hidden = false;
@@ -170,22 +198,22 @@ function guessCheckToggle(status){
     updateGuessCountDisplay();
 }
 
-function updateGuessCountDisplay(){
+function updateGuessCountDisplay() {
     /* 
         Guess count display should appear when the user chooses a song to guess. It should disappear when the
         user chooses a new playlist and they no longer have a song selected. When the user wins or loses, the
         box should update to reflect the outcome of their game.
     */
-   if(current_guesses < 0){
-    if(win_flag == 1){
-        document.getElementById('guessCountDisplay').innerHTML = "You Win! Congratulations!";
-        win_flag = 0;
-    } 
-    else document.getElementById('guessCountDisplay').innerHTML = "You Lose! Too Bad!";
-   }
-   else{
-    document.getElementById('guessCountDisplay').innerHTML = "Remaining Guesses: " + current_guesses;
-   }
+    if (current_guesses < 0) {
+        if (win_flag == 1) {
+            document.getElementById('guessCountDisplay').innerHTML = "You Win! Congratulations!";
+            win_flag = 0;
+        }
+        else document.getElementById('guessCountDisplay').innerHTML = "You Lose! Too Bad!";
+    }
+    else {
+        document.getElementById('guessCountDisplay').innerHTML = "Remaining Guesses: " + current_guesses;
+    }
 }
 
 /* 
@@ -195,7 +223,7 @@ function updateGuessCountDisplay(){
     bandle.
 */
 
-function loadPlaylists(){
+function loadPlaylists() {
     document.getElementById('playlistImageCover').hidden = false;
     fetch('/getPlaylistNames', { method: 'POST' }) // run all playlist names.
         .then(response => response.json())
@@ -217,16 +245,16 @@ function loadPlaylists(){
             });
             playlistCount = iter;
             // main game elements hidden till a playlist is selected
-            document.getElementById('gameBody').hidden = false; 
+            document.getElementById('gameBody').hidden = false;
         })
-        selectedDropdownPlaylist = 0; // selected playlist
-        playlistIndex = selectedDropdownPlaylist;
-        const coverHTML = document.getElementById('playlistImageCover');
-        console.log("pressed show cover")
-        console.log("Selected playlist", selectedDropdownPlaylist);
-        //removed a lot of redundant code that populated the playlistImageCover with the image URLS.
-        for (let i = 0; i < coverURLS.length - 1; i++)
+    selectedDropdownPlaylist = 0; // selected playlist
+    playlistIndex = selectedDropdownPlaylist;
+    const coverHTML = document.getElementById('playlistImageCover');
+    console.log("pressed show cover")
+    console.log("Selected playlist", selectedDropdownPlaylist);
+    //removed a lot of redundant code that populated the playlistImageCover with the image URLS.
+    for (let i = 0; i < coverURLS.length - 1; i++)
         coverHTML.src = coverURLS[i]; // set the src of the image on the website, to the selected playlist image. 
-        coverHTML.style.display = 'block';
-            
+    coverHTML.style.display = 'block';
+
 }
