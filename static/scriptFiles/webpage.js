@@ -189,11 +189,11 @@ function guessCheck(){
 function guessCheckToggle(status){
     if(status == 0){
         current_guesses = -1; //sets the guess counter value to the default
-        document.getElementById('userGuessSubmit').hidden = true;   //hides the guess submit button
+        document.getElementById('userGuessElements').hidden = true;   //hides the guess submit button
     }
     else{
         current_guesses = 5; //sets the guess counter value to the max
-        document.getElementById('userGuessSubmit').hidden = false;  //shows the guess submit button
+        document.getElementById('userGuessElements').hidden = false;  //shows the guess submit button
         document.getElementById('guessCountDisplay').hidden = false;
     }
     updateGuessCountDisplay();

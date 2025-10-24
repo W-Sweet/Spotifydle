@@ -4,17 +4,27 @@
 <head>
     <title> Spotifydle </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spotifydle.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='image_resources/favicon.ico') }}">
 <body>
-
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
+ 
+    <div id="headerContainer">
+        <div id="logoTitle" >
+            <img src="{{ url_for('static', filename='image_resources/spotifydle.png') }}">
+            <div>
+                <h1>Spotifydle</h1>
+            </div>
+        </div>
+        <div id="buttonRow">
+            <select name = "playlists" id = "playlists" onchange="PrintOutSelected();"> </select>
+            <button id ="getPlaylistsButton">Get your Playlists </button>
+            <button id = "getSongs" name = "getSongs"> Get Random Song</button>
+            <button id = "playRandom" name = "playRandom">Play a Random Song</button>
+            <button id = "createEmbed" name = "createEmbed">Create embed</button>
+        </div>
+    </div>
 
-    <select name = "playlists" id = "playlists" onchange="PrintOutSelected();"> </select>
-    <button id ="getPlaylistsButton">Get your Playlists </button>
-    <button id = "getSongs" name = "getSongs"> Get Random Song</button>
-    <button id = "playRandom" name = "playRandom">Play a Random Song</button>
-    <button id = "createEmbed" name = "createEmbed">Create embed</button>
-    
     <!--    I'm encapsulating all the elements that go into the game proper to make it easier to
             hide elements that won't work before the user selects a playlist for the first time.
             Likely will not be organized this way forever.    -->
@@ -26,9 +36,11 @@
         <button id = "selectPlaylist" name = "selectPlaylist"> Select this playlist </button>
         <br> 
         <input type = "image" src ="" name ="playlistShown" class = "btTxt" id ="playlistImageCover" hidden>
-        <label for="userGuess">Enter your guess here!</label>
-        <input type="text" id="userGuess" name="userGuess">
-        <input type="button" id="userGuessSubmit" value="Submit" hidden><br>
+        <div id="userGuessElements" hidden>
+            <label for="userGuess">Enter your guess here!</label>
+            <input type="text" id="userGuess" name="userGuess">
+            <input type="button" id="userGuessSubmit" value="Submit"><br>
+        </div>
         <p id="guessCountDisplay" hidden></p>
         <div id = "embed-iframe" hidden> 
             <iframe src = "" title = "iframeEmbed"> </iframe>
