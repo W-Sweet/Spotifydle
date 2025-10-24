@@ -27,6 +27,9 @@ sp_oauth = SpotifyOAuth(
 )
 
 sp = Spotify(auth_manager=sp_oauth) #where we get the spotify data from.
+                                                                                # WORKING HERE https://github.com/spotipy-dev/spotipy/issues/593 WHY DOES IT SAY NEED SPOTIFY PREMIUM ???
+
+
 
 #first user logs in with spotify account
 @app.route('/') #root for web application
@@ -119,15 +122,26 @@ def getRandomSongROUTE():
 
 
 
-# @app.route('/start_playback', methods = ['POST'])
-# def playSong(songURI): # upon being passed a song URI, begin playing a song. 
-#     data = 
+@app.route('/start_playback', methods = ['POST'])
+def playSong(): # upon being passed a song URI, begin playing a song. 
+    data = request.get_json()
+    playlistURI = data.get('playlistURI')
+    offset = data.get('offset')
+    position = data.get('position')
+    print("DAMN IT WANT TO BE NUMB", playlistURI, "    ", offset, "    ", position)
+    # sp.start_playback( context_uri = playlistURI, offset =  offset, position_ms =  position)       HAS OFFSET
+    # sp.start_playback( context_uri = playlistURI, position_ms = position) HAS POSITION
+    sp.start_playback(context_uri = playlistURI)
+    print("RAN PLAYBACK")   
+
 
 
 def getRandomSongs(playlistURL):  #method, given a URL, will return a random song from it.
     AllSongs = []
     for song in sp.playlist_tracks(playlistURL)["items"]:
-        Data = song["track"]["name"] 
+        # TEMP CHANGING GET SONG TO GET IT's URL INSTEAD OF NAME
+        # Data = song["track"]["name"]
+        Data = song["track"]["URL"]  #LAST HERE
         AllSongs.append(Data)
     random_song = random.choice(AllSongs)
     return random_song
