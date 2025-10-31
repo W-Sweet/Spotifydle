@@ -124,14 +124,14 @@ def getRandomSongROUTE():
 
 @app.route('/start_playback', methods = ['POST'])
 def playSong(): # upon being passed a song URI, begin playing a song. 
-    data = request.get_json()
-    playlistURI = data.get('playlistURI')
-    offset = data.get('offset')
-    position = data.get('position')
-    print("DAMN IT WANT TO BE NUMB", playlistURI, "    ", offset, "    ", position)
-    # sp.start_playback( context_uri = playlistURI, offset =  offset, position_ms =  position)       HAS OFFSET
-    # sp.start_playback( context_uri = playlistURI, position_ms = position) HAS POSITION
-    sp.start_playback(context_uri = playlistURI)
+    # data = request.get_json()
+    # playlistURI = data.get('playlistURI')
+    # offset = data.get('offset')
+    # position = data.get('position')
+    # print("DAMN IT WANT TO BE NUMB", playlistURI, "    ", offset, "    ", position)
+    # # sp.start_playback( context_uri = playlistURI, offset =  offset, position_ms =  position)       HAS OFFSET
+    # # sp.start_playback( context_uri = playlistURI, position_ms = position) HAS POSITION
+    # sp.start_playback(context_uri = playlistURI)
     print("RAN PLAYBACK")   
 
 
@@ -140,8 +140,8 @@ def getRandomSongs(playlistURL):  #method, given a URL, will return a random son
     AllSongs = []
     for song in sp.playlist_tracks(playlistURL)["items"]:
         # TEMP CHANGING GET SONG TO GET IT's URL INSTEAD OF NAME
-        # Data = song["track"]["name"]
-        Data = song["track"]["URL"]  #LAST HERE
+        Data = song["track"]["name"]
+       # Data = song["track"]["URL"]  #TEMP VALS DON'T USE OUTSIDE OF TESTING
         AllSongs.append(Data)
     random_song = random.choice(AllSongs)
     return random_song

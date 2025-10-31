@@ -75,18 +75,20 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
 })
 
 
-document.getElementById('createEmbed').addEventListener('click', function () {
+document.getElementById('createEmbed').addEventListener('click', function() {
     console.log("Show embed button pressed");
-    document.getElementById('createEmbed').hidden = false;
-    window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        const embedURI = document.getElementById('embed-iframe');
-        let options = {uri: URLS[playlistIndex]}
-        const callback = (EmbedController) => { };
-        // console.log("HERE 2", options, "HE IS HERE", typeof(options))
-        // let secondVal = options.uri.replace("open", "player")
-        // console.log("CLIPPING", secondVal)
-        IFrameAPI.createController(embedURI, options, callback);
+
+    document.getElementById('embed-iframe').hidden = false; // unhide the embed
+    window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
+        console.log("THE API IS READY AND AVAILABLE");
+        // const element = document.getElementById('embed-iframe'); 
+        // console.log("HERE IS HERE", URLS[playlistIndex]);
+        // const options = {uri: URLS[playlistIndex]};
+        // const callback = (EmbedController) => { };
+        // IFrameAPI.createController(element, options, callback);
     };
+
+    console.log("Completed embed function")
     has_embed = 1; // we now have an embed and attempt playing a song.
 })
 
