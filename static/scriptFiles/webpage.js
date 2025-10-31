@@ -33,10 +33,10 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
             ).then(playlistCovers => {
                 coverURLS.push(...playlistCovers); // Store all covers
                 console.log(coverURLS);
-            }).catch(error => console.error('Error fetching covers:', error));
+            })
+            .then(loadPlaylists).catch(error => console.error('Error fetching covers:', error));
 
             // experimental: attempting to call loadPlaylists() on website start with guarauntee that /get_playlist_URLS has been executed
-            loadPlaylists();
         });
 
     fetch('/get_playlist_URIS', { method: 'POST' }) // get all playlist URIS and put them in a playlist. 
@@ -48,6 +48,11 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
                 URIS = URI;
             });
         });
+
+    
+    var logo = document.getElementById('logo');
+    var pageTitle = document.getElementById('pageTitle');
+    pageTitle.style.height = logo.style.height;
 });
 
 document.getElementById('getPlaylistsButton').addEventListener('click', loadPlaylists) //when the "Get your Playlists" button is pressed, fill in the dropdown, with all the user's playlist names, as well as display the rotating cover display at the bottom of the webpage.
@@ -151,6 +156,9 @@ async function getRandomSong(val) { // when passed a playlist index, IE 2 would 
     const listItem = document.createElement('li');
     listItem.textContent = songData;
     randomSongs.appendChild(listItem);
+
+    guessCheckToggle(1);
+
     return songData; // returns a random song based off of val.
 }
 
@@ -247,7 +255,7 @@ function loadPlaylists() {
             // main game elements hidden till a playlist is selected
             document.getElementById('gameBody').hidden = false;
         })
-    selectedDropdownPlaylist = 0; // selected playlist
+    selectedDropdownPlaylist = 1; // selected playlist
     playlistIndex = selectedDropdownPlaylist;
     const coverHTML = document.getElementById('playlistImageCover');
     console.log("pressed show cover")

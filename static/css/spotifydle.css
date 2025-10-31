@@ -1,6 +1,23 @@
-/*  CSS File for the main page of the Spotifydle Web Application.
+/*  
+    CSS File for the main page of the Spotifydle Web Application.
     May need to be renamed as we alter the project closer to completion.
-    Handles the visual design of the page where the user has to guess the game. */
+    Handles the visual design of the page where the user has to guess the game. 
+    
+    Important things to remember:
+
+    - 1rem = 4px by default. rem actually scales based on the font size set in the root
+      element of a page. I used rem so that hopefully things will scale a bit better for
+      people who have their font size differently in their browsers (i.e. old people or the
+      visually impaired). This hopefully shouldn't come up too much. Can be changed to
+      pixels if absolutely necessary.
+    
+    - The general convention for how css is handled for this webpage is that each unique element
+      that needs to be individually styled will have its own id. I'm not going to use classes because
+      I'm quite frankly not confident in my ability to use them, given a lack of experience working with
+      them on a conceptual level. This format isn't necessary if someone in the future wants to
+      iterate on the implementation of the website and improve it.
+
+*/
 
 body {
     font-family: 'Lucida Sans', 'Georgia';
@@ -17,17 +34,55 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
 }
 
-#logotitle{
+#logoTitle{
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+#logo{
+    max-width: 5rem;
+    max-height: 5rem;
+    border-radius: 1rem;
+}
+
+#gameBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding-top: 1rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+#randomSongsWrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    text-align: left;
+}
+
+#randomSongs {
+    list-style-type: inside;
 }
 
 #playlistImageCover{
     border-style: solid;
     border-width: 0.25rem;
+
+    max-width: 25rem;
+    max-height: 25rem;
+
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+
 
     /* This color is ugly as hell. Still workshopping it. */
     border-color: #A8BD6F;

@@ -6,14 +6,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spotifydle.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='image_resources/favicon.ico') }}">
 <body>
-    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+    <!-- 
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>  
+    commenting out this line for now, Liam should hopefully be fixing this soon 
+    -->
 
  
     <div id="headerContainer">
         <div id="logoTitle" >
-            <img src="{{ url_for('static', filename='image_resources/spotifydle.png') }}">
-            <div>
-                <h1>Spotifydle</h1>
+            <div id="logoTitle">
+                <img src="{{ url_for('static', filename='image_resources/spotifydle.png') }}" id="logo">
+                <h1 id="pageTitle">Spotifydle</h1>
             </div>
         </div>
         <div id="buttonRow">
@@ -32,12 +35,13 @@
         <p> Your playlists </p>
         <ul id = "playlistContainer"></ul>
         <p> Random song from selected playlist</p>
-        <ul id = "randomSongs"> </ul>
+        <div id="randomSongsWrapper">
+            <ul id = "randomSongs"> </ul>
+        </div>
         <button id = "selectPlaylist" name = "selectPlaylist"> Select this playlist </button>
-        <br> 
         <input type = "image" src ="" name ="playlistShown" class = "btTxt" id ="playlistImageCover" hidden>
         <div id="userGuessElements" hidden>
-            <label for="userGuess">Enter your guess here!</label>
+            <label for="userGuess">Enter your guess here:</label>
             <input type="text" id="userGuess" name="userGuess">
             <input type="button" id="userGuessSubmit" value="Submit"><br>
         </div>

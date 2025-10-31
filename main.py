@@ -140,8 +140,8 @@ def getRandomSongs(playlistURL):  #method, given a URL, will return a random son
     AllSongs = []
     for song in sp.playlist_tracks(playlistURL)["items"]:
         # TEMP CHANGING GET SONG TO GET IT's URL INSTEAD OF NAME
-        # Data = song["track"]["name"]
-        Data = song["track"]["URL"]  #LAST HERE
+        Data = song["track"]["name"]
+        # Data = song["track"]["URL"]  #LAST HERE
         AllSongs.append(Data)
     random_song = random.choice(AllSongs)
     return random_song
