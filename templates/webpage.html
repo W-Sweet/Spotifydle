@@ -5,11 +5,8 @@
     <title> Spotifydle </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spotifydle.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='image_resources/favicon.ico') }}">
-<body>
-    <!-- 
+<body> 
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>  
-    commenting out this line for now, Liam should hopefully be fixing this soon 
-    -->
 
  
     <div id="headerContainer">
@@ -21,8 +18,6 @@
         </div>
         <div id="buttonRow">
             <select name = "playlists" id = "playlists" onchange="PrintOutSelected();"> </select>
-            <button id ="getPlaylistsButton">Get your Playlists </button>
-            <button id = "getSongs" name = "getSongs"> Get Random Song</button>
             <button id = "playRandom" name = "playRandom">Play a Random Song</button>
             <button id = "createEmbed" name = "createEmbed">Create embed</button>
         </div>
@@ -32,8 +27,15 @@
             hide elements that won't work before the user selects a playlist for the first time.
             Likely will not be organized this way forever.    -->
     <div id = "gameBody" hidden>
-        <p> Your playlists </p>
-        <ul id = "playlistContainer"></ul>
+        
+        <!-- 
+            Temp fix on hiding these elements. Since they are depreciated debug
+            elements, might be good to keep them commented out?
+        -->
+        <p id="playlistIntro" hidden> Your playlists </p>
+        <ul id = "playlistContainer" hidden></ul>
+
+        
         <p> Random song from selected playlist</p>
         <div id="randomSongsWrapper">
             <ul id = "randomSongs"> </ul>
@@ -47,7 +49,7 @@
         </div>
         <p id="guessCountDisplay" hidden></p>
         <div id = "embed-iframe" name = "embed-iframe" hidden> 
-            <iframe src = "" title = "iframeEmbed"> </iframe>
+            <!-- <iframe src = "" title = "iframeEmbed"> </iframe> -->
         </div>
     </div>
 

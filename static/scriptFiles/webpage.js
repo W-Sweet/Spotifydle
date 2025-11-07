@@ -8,6 +8,7 @@ var curr_song;
 var current_guesses = -1; // starts at -1, value for use not having a song selected
 var win_flag = 0; // flag to let the page know player won game. 0 is false, 1 is true.
 var has_embed = 0;
+var debug = 0; // flag programmer sets while working on the page. Enable debug rendering on webpage
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -55,8 +56,6 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
     pageTitle.style.height = logo.style.height;
 });
 
-document.getElementById('getPlaylistsButton').addEventListener('click', loadPlaylists) //when the "Get your Playlists" button is pressed, fill in the dropdown, with all the user's playlist names, as well as display the rotating cover display at the bottom of the webpage.
-
 document.getElementById('playlistImageCover').addEventListener('click', function () { //Fucntion to allow the playlist cover to be pressed, which will cause it to display the next playlist looping back to the first playlist when we reach the last playlist.
     const coverHTML = document.getElementById('playlistImageCover');
     console.log("Playlist cover pressed");
@@ -70,12 +69,22 @@ document.getElementById('playlistImageCover').addEventListener('click', function
     }
     coverHTML.src = coverURLS[playlistIndex]; // re-display the playlist on the website. 
     coverHTML.style.display = 'block';
+
+    // attempting to implement functionality for refreshing the embed when the user switches albums?
+    var iframe = document.getElementById('embed-iframe')
+    if(has_embed == 1){
+        console.log("THE IFRAME IS SHOWING");
+        displayDiv = document.getElementById("embed-iframe");
+        displayDiv = removeChild(displayDiv.lastChild);
+    }
+
 })
 
 document.getElementById('selectPlaylist').addEventListener('click', function () { //when the Select ts playlist button is pressed, it will select a random song from said playlist and show it on the website. 
     console.log("Hit select this playlist");
     getRandomSong(playlistIndex).then(song => {
         console.log("Random song from selected playlist: ", song);
+        curr_song = song;
     });
 })
 
@@ -83,16 +92,19 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
 document.getElementById('createEmbed').addEventListener('click', function() {
     console.log("Show embed button pressed");
 
-    document.getElementById('embed-iframe').hidden = false; // unhide the embed
+    if(has_embed == 0){
+        document.getElementById('embed-iframe').hidden = false; // unhide the embed
+    }
+    
     window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
         console.log("THE API IS READY AND AVAILABLE");
-        // const element = document.getElementById('embed-iframe'); 
-        // console.log("HERE IS HERE", URLS[playlistIndex]);
-        // const options = {uri: URLS[playlistIndex]};
-        // const callback = (EmbedController) => { };
-        // IFrameAPI.createController(element, options, callback);
+        const element = document.getElementById('embed-iframe'); 
+        console.log("HERE IS HERE", URLS[playlistIndex]);
+        const options = {uri: URLS[playlistIndex]};
+        const callback = (EmbedController) => { };
+        IFrameAPI.createController(element, options, callback);
     };
-
+o
     console.log("Completed embed function")
     has_embed = 1; // we now have an embed and attempt playing a song.
 })
@@ -239,15 +251,23 @@ function loadPlaylists() {
         .then(response => response.json())
         .then(data => {
             console.log("PLAYLIST NAMES:", data);
-            const playlistContainer = document.getElementById('playlistContainer');
+            // debug line for rendering list of user playlists visible. might delete later.
+            if(debug == 1){
+                document.getElementById('playlistIntro').hidden = false;
+                const playlistContainer = document.getElementById('playlistContainer');
+                playlistContainer.hidden = false;
+            }
             var select = document.getElementById("playlists")
             playlistContainer.innerHTML = '';
             var iter = 0;
             data.forEach(name => { // going through and for each playlist adding it as a list object onto the webpage
                 const listItem = document.createElement('li');
                 listItem.textContent = name;
-                playlistContainer.appendChild(listItem);
-                console.log("Adding ", select.options.length, "  ", listItem.textContent)
+                // another debug line for redering list of user playlists
+                if(debug == 1){
+                    playlistContainer.appendChild(listItem);
+                    console.log("Adding ", select.options.length, "  ", listItem.textContent);
+                }
                 toAdd = new Option(name, iter);
                 console.log("printing name again, ", toAdd.textContent)
                 select.options[select.options.length] = toAdd; // add to dropdown menu all possible playlists. 
@@ -255,6 +275,7 @@ function loadPlaylists() {
             });
             playlistCount = iter;
             // main game elements hidden till a playlist is selected
+            // I'm gonna be so for real, the line of code below this might be depreciated
             document.getElementById('gameBody').hidden = false;
         })
     selectedDropdownPlaylist = 1; // selected playlist
