@@ -5,6 +5,7 @@ var playlistCount = 0; // amount of playlists.
 var selectedDropdownPlaylist;  // The selected playlist in the drop down menu at the top of the website, gotten from e.
 var playlistIndex; // The index of the currently selected playlist, under the rotating image display.
 var curr_song;
+var curr_song_url; // temp variable to get the url for the randomly selected song.
 var current_guesses = -1; // starts at -1, value for use not having a song selected
 var win_flag = 0; // flag to let the page know player won game. 0 is false, 1 is true.
 var has_embed = 0;
@@ -34,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
                 coverURLS.push(...playlistCovers); // Store all covers
                 console.log(coverURLS);
             })
-            .then(loadPlaylists).catch(error => console.error('Error fetching covers:', error));
+                .then(loadPlaylists).catch(error => console.error('Error fetching covers:', error));
 
             // experimental: attempting to call loadPlaylists() on website start with guarauntee that /get_playlist_URLS has been executed
         });
@@ -44,12 +45,11 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
         .then(response => response.json())
         .then(data => {
             data.forEach(URI => { // put every URI into a array called URLS.
-                console.log("THIS IS A URI  ", URI);
                 URIS = URI;
             });
         });
 
-    
+
     var logo = document.getElementById('logo');
     var pageTitle = document.getElementById('pageTitle');
     pageTitle.style.height = logo.style.height;
@@ -76,25 +76,49 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
     console.log("Hit select this playlist");
     getRandomSong(playlistIndex).then(song => {
         console.log("Random song from selected playlist: ", song);
+        curr_song = song;
+
+
+        //testing code for getting current song URL
+        fetch('/getSongURL', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                playlistURL: (URLS[playlistIndex]),
+                songName: (curr_song)
+            })
+        })
+            .then(response => response.json()) 
+            .then(data => {
+                console.log(data.songURL);
+                curr_song_url = data.songURL; // THIS STILL ISNT SHOWING UP HERE, WORK ON NEXT TIME EEEE 
+            })
     });
+    console.log("I don't have the right", curr_song_url);
 })
 
 
-document.getElementById('createEmbed').addEventListener('click', function() {
+document.getElementById('createEmbed').addEventListener('click', function () {
     console.log("Show embed button pressed");
-
+    if (has_embed ==0){
     document.getElementById('embed-iframe').hidden = false; // unhide the embed
     window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
         console.log("THE API IS READY AND AVAILABLE");
-        // const element = document.getElementById('embed-iframe'); 
-        // console.log("HERE IS HERE", URLS[playlistIndex]);
-        // const options = {uri: URLS[playlistIndex]};
-        // const callback = (EmbedController) => { };
-        // IFrameAPI.createController(element, options, callback);
+        const element = document.getElementById('embed-iframe');
+        console.log("HERE IS HERE", URLS[playlistIndex]);
+        const options = { uri: URLS[playlistIndex] };
+        const callback = (EmbedController) => { };
+        IFrameAPI.createController(element, options, callback);
     };
 
     console.log("Completed embed function")
     has_embed = 1; // we now have an embed and attempt playing a song.
+    }
+    else{
+        console.log("Already have embed")
+    }
 })
 
 
@@ -105,7 +129,9 @@ document.getElementById('playRandom').addEventListener('click', function () {   
     Upon pressing the "Play a Random Song" button, the js will call the python function 
     '/start_playback' which will start playback of a random song on the playlist.
     */
-    
+
+    //pause_playback()
+
     console.log("Pressed play random");
     if (has_embed == 1) {
         console.log("Attempting to play")
@@ -190,7 +216,6 @@ function guessCheck() {
 
     }
 
-    // console.log(typeof curr_song);
 }
 
 //turns the interface for submitting guesses on/off depending on input text string
