@@ -5,11 +5,13 @@ var playlistCount = 0; // amount of playlists.
 var selectedDropdownPlaylist;  // The selected playlist in the drop down menu at the top of the website, gotten from e.
 var playlistIndex; // The index of the currently selected playlist, under the rotating image display.
 var curr_song;
-var curr_song_url; // temp variable to get the url for the randomly selected song.
+var curr_song_url = null; // temp variable to get the url for the randomly selected song.
 var current_guesses = -1; // starts at -1, value for use not having a song selected
 var win_flag = 0; // flag to let the page know player won game. 0 is false, 1 is true.
 var has_embed = 0;
 var debug = 0; // flag programmer sets while working on the page. Enable debug rendering on webpage
+var embedController = null; // embed Controller
+var timeToPlaySongsInMS = [2000, 4000, 8000, 12000, 15000] //wait time in 5 intervals
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -101,72 +103,66 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
             .then(response => response.json()) 
             .then(data => {
                 console.log(data.songURL);
-                curr_song_url = data.songURL; // THIS STILL ISNT SHOWING UP HERE, WORK ON NEXT TIME EEEE 
+                curr_song_url = data.songURL; 
             })
     });
-    console.log("I don't have the right", curr_song_url);
+   
 })
 
 
 document.getElementById('createEmbed').addEventListener('click', function () {
     console.log("Show embed button pressed");
 
-    if(has_embed == 0){
-        document.getElementById('embed-iframe').hidden = false; // unhide the embed
-    }
+    if(has_embed == 0 && curr_song_url != null){ // doesn't have embed
+        document.getElementById("embed-iframe").hidden = false; // unhide the embed
     
-    window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
-        console.log("THE API IS READY AND AVAILABLE");
-        const element = document.getElementById('embed-iframe');
-        console.log("HERE IS HERE", URLS[playlistIndex]);
-        const options = { uri: URLS[playlistIndex] };
-        const callback = (EmbedController) => { };
-        IFrameAPI.createController(element, options, callback);
-    };
-o
-    console.log("Completed embed function")
-    has_embed = 1; // we now have an embed and attempt playing a song.
+    
+        window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
+            console.log("THE API IS READY AND AVAILABLE");
+            const element = document.getElementById('embed-iframe');
+            const options = {uri: curr_song_url};
+            const callback = (EmbedController) => {embedController = EmbedController};
+            IFrameAPI.createController(element, options, callback);
+        };
+    
+        console.log("Completed embed function")
+        has_embed = 1; // we now have an embed and attempt playing a song.
+        
     }
     else{
-        console.log("Already have embed")
+        console.log("Already have embed, or curr_song_url is null");
     }
+}
+
+)
+
+
+
+
+document.getElementById('startGame').addEventListener('click', function () {    // https://web.archive.org/web/20191026192215/https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
+        console.log("Pressed play random");
+        
+        //document.getElementById("embed-iframe").display = "hidden"; Someone needs to fix hiding.
+        
+        if (embedController != null){
+            console.log("starting game")
+            embedController.play();
+            sleep(2000).then(() =>  {embedController.pause(); console.log("Pausing song");});
+            //now we wait for a guess from the user.
+
+        }
+        else{
+            console.log("embedController is null")
+        }
 })
 
 
 
-
-document.getElementById('playRandom').addEventListener('click', function () {    // https://web.archive.org/web/20191026192215/https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
-    /* 
-    Upon pressing the "Play a Random Song" button, the js will call the python function 
-    '/start_playback' which will start playback of a random song on the playlist.
-    */
-
-    //pause_playback()
-
-    console.log("Pressed play random");
-    if (has_embed == 1) {
-        console.log("Attempting to play")
-        /* call python function for start_playback with 
-            device_id - (should be left blank?)        
-            context_uri - should be spotify context uri to play? Should be the playlist URI? 
-            uris - don't add
-            offset - offsets by track, this is how we would select the random song? 
-            position_ms - indicates how far into the song to start playback
-        */
-        fetch('/start_playback', { // works but we don't have premium...so.....uh.....uh....
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                playlistURI: JSON.stringify(URI),
-                offset: JSON.stringify(1),
-                position_ms: JSON.stringify(0)
-            })
-        });
-
-    }
-})
+/*
+    wait for user to guess
+    check guess
+    either play more, or end game. 
+*/
 
 document.getElementById('userGuessSubmit').addEventListener('click', guessCheck)
 
@@ -208,11 +204,16 @@ function guessCheck() {
     console.log("User Guess:", userGuess); //prints out the user's guess, for debugging purposes
     console.log("Selected Song:", curr_song); //prints out the current song being guessed, for debugging purposes
 
+
+//timeToPlaySongsInMS
     if (userGuess === curr_song) {
         console.log("You won, Good Job!"); //debug statement for testing logic
         win_flag = 1;
+        embedController.pause();
+        embedController.play();
         guessCheckToggle(0);
     }
+    
     else {
         console.log("You SUCK!"); //debug statement for testing logic
         current_guesses--;
@@ -312,4 +313,9 @@ function loadPlaylists() {
         coverHTML.src = coverURLS[i]; // set the src of the image on the website, to the selected playlist image. 
     coverHTML.style.display = 'block';
 
+}
+
+//helper function to delay on the website. Very strange since we are in JS, use sparingly.
+function sleep(ms){ 
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

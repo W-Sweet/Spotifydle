@@ -1,62 +1,64 @@
 <!doctype html>
-<html lang = "en">
+<html lang="en">
 
 <head>
     <title> Spotifydle </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spotifydle.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='image_resources/favicon.ico') }}">
+
 <body>
-    
-    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>  
+
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
 
- 
+
     <div id="headerContainer">
-        <div id="logoTitle" >
+        <div id="logoTitle">
             <div id="logoTitle">
                 <img src="{{ url_for('static', filename='image_resources/spotifydle.png') }}" id="logo">
                 <h1 id="pageTitle">Spotifydle</h1>
             </div>
         </div>
         <div id="buttonRow">
-            <select name = "playlists" id = "playlists" onchange="PrintOutSelected();"> </select>
-            <button id = "playRandom" name = "playRandom">Play a Random Song</button>
-            <button id = "createEmbed" name = "createEmbed">Create embed</button>
+            <select name="playlists" id="playlists" onchange="PrintOutSelected();"> </select>
+            <button id="startGame" name="startGame">Start Game</button>
+            <button id="createEmbed" name="createEmbed">Create embed</button>
         </div>
     </div>
 
     <!--    I'm encapsulating all the elements that go into the game proper to make it easier to
             hide elements that won't work before the user selects a playlist for the first time.
             Likely will not be organized this way forever.    -->
-    <div id = "gameBody" hidden>
-        
+    <div id="gameBody" hidden>
+
         <!-- 
             Temp fix on hiding these elements. Since they are depreciated debug
             elements, might be good to keep them commented out?
         -->
         <p id="playlistIntro" hidden> Your playlists </p>
-        <ul id = "playlistContainer" hidden></ul>
+        <ul id="playlistContainer" hidden></ul>
 
-        
+
         <p> Random song from selected playlist</p>
         <div id="randomSongsWrapper">
-            <ul id = "randomSongs"> </ul>
+            <ul id="randomSongs"> </ul>
         </div>
-        <button id = "selectPlaylist" name = "selectPlaylist"> Select this playlist </button>
-        <input type = "image" src ="" name ="playlistShown" class = "btTxt" id ="playlistImageCover" hidden>
+        <button id="selectPlaylist" name="selectPlaylist"> Select this playlist </button>
+        <input type="image" src="" name="playlistShown" class="btTxt" id="playlistImageCover" hidden>
         <div id="userGuessElements" hidden>
             <label for="userGuess">Enter your guess here:</label>
             <input type="text" id="userGuess" name="userGuess">
             <input type="button" id="userGuessSubmit" value="Submit"><br>
         </div>
         <p id="guessCountDisplay" hidden></p>
-        <div id = "embed-iframe" name = "embed-iframe" hidden> 
+        <div id="embed-iframe" name="embed-iframe" display="block">
         </div>
     </div>
 
     <!--   Script loading tag must be at bottom of the page, otherwise js page won't load correctly!   -->
-    <script src = "{{ url_for('static', filename='scriptFiles/webpage.js')}}"></script>
+    <script src="{{ url_for('static', filename='scriptFiles/webpage.js')}}"></script>
 
 </body>
 </head>
+
 </html>

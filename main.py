@@ -126,7 +126,7 @@ def getSongURLROUTE():
     playlistURL = data.get('playlistURL')
     songName = data.get('songName')
     songURL = getSongURL(playlistURL, songName)
-    return jsonify(songURL)
+    return jsonify({'songURL': songURL})
 
 @app.route('/start_playback', methods = ['POST'])
 def playSong(): # upon being passed a song URI, begin playing a song. 
@@ -155,9 +155,7 @@ def getRandomSongs(playlistURL):  #method, given a URL, will return a random son
 def getSongURL(playlistURL, songName):
     playlistURL = playlistURL.strip('\"')
     songName = songName.strip('\"')
-    print("Christmas :)")
     for song in sp.playlist_tracks(playlistURL)["items"]:
-       print(song["track"]["name"], "   ", songName)
        if (song["track"]["name"] == songName):
            returnVal = song["track"]["external_urls"]["spotify"]
     return returnVal
