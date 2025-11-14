@@ -9,7 +9,7 @@ var curr_song_url = null; // temp variable to get the url for the randomly selec
 var current_guesses = -1; // starts at -1, value for use not having a song selected
 var win_flag = 0; // flag to let the page know player won game. 0 is false, 1 is true.
 var has_embed = 0;
-var debug = 0; // flag programmer sets while working on the page. Enable debug rendering on webpage
+var debug = 1; // flag programmer sets while working on the page. Enable debug rendering on webpage
 var embedController = null; // embed Controller
 var timeToPlaySongsInMS = [2000, 4000, 8000, 12000, 15000] //wait time in 5 intervals
 
@@ -76,18 +76,19 @@ document.getElementById('playlistImageCover').addEventListener('click', function
     var iframe = document.getElementById('embed-iframe')
     if(has_embed == 1){
         console.log("THE IFRAME IS SHOWING");
-        displayDiv = document.getElementById("embed-iframe");
-        displayDiv = removeChild(displayDiv.lastChild);
+        // displayDiv = document.getElementById("embed-iframe");
+        // displayDiv = removeChild(displayDiv.lastChild);
+        embedController.destroy();
+        // var embedController = null; // embed Controller
     }
 
 })
 
-document.getElementById('selectPlaylist').addEventListener('click', function () { //when the Select ts playlist button is pressed, it will select a random song from said playlist and show it on the website. 
+document.getElementById('selectPlaylist').addEventListener('click', function () { //when the Select this playlist button is pressed, it will select a random song from said playlist and show it on the website. 
     console.log("Hit select this playlist");
     getRandomSong(playlistIndex).then(song => {
         console.log("Random song from selected playlist: ", song);
         curr_song = song;
-
 
         //testing code for getting current song URL
         fetch('/getSongURL', {
@@ -106,6 +107,9 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
                 curr_song_url = data.songURL; 
             })
     });
+
+    //unhide the play music clip button
+    document.getElementById('startGame').hidden = false;
    
 })
 
@@ -279,8 +283,10 @@ function loadPlaylists() {
             // debug line for rendering list of user playlists visible. might delete later.
             if(debug == 1){
                 document.getElementById('playlistIntro').hidden = false;
-                const playlistContainer = document.getElementById('playlistContainer');
-                playlistContainer.hidden = false;
+                document.getElementById('playlistContainer').hidden = false;
+                document.getElementById('randomSongsWrapper').hidden = false;
+                document.getElementById('randomSongIntro').hidden = false;
+                document.getElementById('randomSongs').hidden = false;
             }
             var select = document.getElementById("playlists")
             playlistContainer.innerHTML = '';

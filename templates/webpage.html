@@ -21,7 +21,6 @@
         </div>
         <div id="buttonRow">
             <select name="playlists" id="playlists" onchange="PrintOutSelected();"> </select>
-            <button id="startGame" name="startGame">Start Game</button>
             <button id="createEmbed" name="createEmbed">Create embed</button>
         </div>
     </div>
@@ -39,9 +38,9 @@
         <ul id="playlistContainer" hidden></ul>
 
 
-        <p> Random song from selected playlist</p>
-        <div id="randomSongsWrapper">
-            <ul id="randomSongs"> </ul>
+        <p id="randomSongIntro" hidden> Random song from selected playlist</p>
+        <div id="randomSongsWrapper" hidden>
+            <ul id="randomSongs" hidden> </ul>
         </div>
         <button id="selectPlaylist" name="selectPlaylist"> Select this playlist </button>
         <input type="image" src="" name="playlistShown" class="btTxt" id="playlistImageCover" hidden>
@@ -51,6 +50,7 @@
             <input type="button" id="userGuessSubmit" value="Submit"><br>
         </div>
         <p id="guessCountDisplay" hidden></p>
+        <button id="startGame" name="startGame" hidden>Play Clip</button>
         <div id="embed-iframe" name="embed-iframe" display="block">
         </div>
     </div>
