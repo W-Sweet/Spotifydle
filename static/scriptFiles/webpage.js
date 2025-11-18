@@ -11,7 +11,7 @@ var win_flag = 0; // flag to let the page know player won game. 0 is false, 1 is
 var has_embed = 0;
 var debug = 0; // flag programmer sets while working on the page. Enable debug rendering on webpage
 var embedController = null; // embed Controller
-var timeToPlaySongsInMS = [2000, 4000, 8000, 12000, 15000] //wait time in 5 intervals
+var timeToPlaySongs = [15000, 12000, 8000, 4000, 2000]
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -74,7 +74,7 @@ document.getElementById('playlistImageCover').addEventListener('click', function
 
     // attempting to implement functionality for refreshing the embed when the user switches albums?
     var iframe = document.getElementById('embed-iframe')
-    if(has_embed == 1){
+    if (has_embed == 1) {
         console.log("THE IFRAME IS SHOWING");
         displayDiv = document.getElementById("embed-iframe");
         displayDiv = removeChild(displayDiv.lastChild);
@@ -82,7 +82,7 @@ document.getElementById('playlistImageCover').addEventListener('click', function
 
 })
 
-document.getElementById('selectPlaylist').addEventListener('click', function () { //when the Select ts playlist button is pressed, it will select a random song from said playlist and show it on the website. 
+document.getElementById('selectPlaylist').addEventListener('click', function () { //when the Select this playlist button is pressed, it will select a random song from said playlist and show it on the website. 
     console.log("Hit select this playlist");
     getRandomSong(playlistIndex).then(song => {
         console.log("Random song from selected playlist: ", song);
@@ -100,39 +100,43 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
                 songName: (curr_song)
             })
         })
-            .then(response => response.json()) 
+            .then(response => response.json())
             .then(data => {
                 console.log(data.songURL);
-                curr_song_url = data.songURL; 
+                curr_song_url = data.songURL;
             })
     });
-   
+
 })
 
 
 document.getElementById('createEmbed').addEventListener('click', function () {
     console.log("Show embed button pressed");
 
-    if(has_embed == 0 && curr_song_url != null){ // doesn't have embed
+    if (has_embed == 0 && curr_song_url != null) { // doesn't have embed
         document.getElementById("embed-iframe").hidden = false; // unhide the embed
-    
-    
+
+
         window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
             console.log("THE API IS READY AND AVAILABLE");
             const element = document.getElementById('embed-iframe');
-            const options = {uri: curr_song_url};
-            const callback = (EmbedController) => {embedController = EmbedController};
+            const options = { 
+                uri: curr_song_url,
+                height: '0', // make the embed invisible by setting it's height and width to 0.
+                width: '0%'
+             };
+            const callback = (EmbedController) => { embedController = EmbedController };
             IFrameAPI.createController(element, options, callback);
         };
-    
+
         console.log("Completed embed function")
         has_embed = 1; // we now have an embed and attempt playing a song.
-        
+
     }
-    else{
-        console.log("Already have embed, or curr_song_url is null");
+    else {
+        embedController.loadUri(curr_song_url);
+        }
     }
-}
 
 )
 
@@ -140,29 +144,18 @@ document.getElementById('createEmbed').addEventListener('click', function () {
 
 
 document.getElementById('startGame').addEventListener('click', function () {    // https://web.archive.org/web/20191026192215/https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
-        console.log("Pressed play random");
-        
-        //document.getElementById("embed-iframe").display = "hidden"; Someone needs to fix hiding.
-        
-        if (embedController != null){
-            console.log("starting game")
-            embedController.play();
-            sleep(2000).then(() =>  {embedController.pause(); console.log("Pausing song");});
-            //now we wait for a guess from the user.
+    console.log("Pressed start Game");
 
-        }
-        else{
-            console.log("embedController is null")
-        }
+    if (embedController != null) {
+        console.log("starting game")
+        embedController.play();
+        console.log("Playing for ", timeToPlaySongs[4]);
+        sleep(timeToPlaySongs[4]).then(() => { embedController.pause(); console.log("Pausing song"); }); // we let the song play for the shortest interval, then pause and wait for the user to guess. 
+    }
+    else {
+        console.log("embedController is null")
+    }
 })
-
-
-
-/*
-    wait for user to guess
-    check guess
-    either play more, or end game. 
-*/
 
 document.getElementById('userGuessSubmit').addEventListener('click', guessCheck)
 
@@ -205,7 +198,7 @@ function guessCheck() {
     console.log("Selected Song:", curr_song); //prints out the current song being guessed, for debugging purposes
 
 
-//timeToPlaySongsInMS
+    //timeToPlaySongsInMS
     if (userGuess === curr_song) {
         console.log("You won, Good Job!"); //debug statement for testing logic
         win_flag = 1;
@@ -213,15 +206,20 @@ function guessCheck() {
         embedController.play();
         guessCheckToggle(0);
     }
-    
+
     else {
         console.log("You SUCK!"); //debug statement for testing logic
         current_guesses--;
         if (current_guesses == 0) {
             console.log("You Lose, too bad!")
+            embedController.pause();
+            embedController.play();
             guessCheckToggle(0);
         }
         else {
+            embedController.pause(); // restart song
+            embedController.play(); 
+            sleep(timeToPlaySongs[current_guesses - 1]).then(() => { embedController.pause(); console.log("Pausing song"); }); //play song for a set amount of time, correlating to the amount of guesses left. 
             console.log("Current Guesses:", current_guesses);
             updateGuessCountDisplay();
         }
@@ -277,7 +275,7 @@ function loadPlaylists() {
         .then(data => {
             console.log("PLAYLIST NAMES:", data);
             // debug line for rendering list of user playlists visible. might delete later.
-            if(debug == 1){
+            if (debug == 1) {
                 document.getElementById('playlistIntro').hidden = false;
                 const playlistContainer = document.getElementById('playlistContainer');
                 playlistContainer.hidden = false;
@@ -289,7 +287,7 @@ function loadPlaylists() {
                 const listItem = document.createElement('li');
                 listItem.textContent = name;
                 // another debug line for redering list of user playlists
-                if(debug == 1){
+                if (debug == 1) {
                     playlistContainer.appendChild(listItem);
                     console.log("Adding ", select.options.length, "  ", listItem.textContent);
                 }
@@ -316,6 +314,6 @@ function loadPlaylists() {
 }
 
 //helper function to delay on the website. Very strange since we are in JS, use sparingly.
-function sleep(ms){ 
+function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
