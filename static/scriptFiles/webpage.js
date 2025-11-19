@@ -9,9 +9,10 @@ var curr_song_url = null; // temp variable to get the url for the randomly selec
 var current_guesses = -1; // starts at -1, value for use not having a song selected
 var win_flag = 0; // flag to let the page know player won game. 0 is false, 1 is true.
 var has_embed = 0;
-var debug = 0; // flag programmer sets while working on the page. Enable debug rendering on webpage
+var debug = 1; // flag programmer sets while working on the page. Enable debug rendering on webpage
 var embedController = null; // embed Controller
 var timeToPlaySongs = [15000, 12000, 8000, 4000, 2000]
+var lastsongselected  // tracker for the last song selected by spotifydle. intended to prevent players recieving the same song two times in a row randomly
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -76,8 +77,10 @@ document.getElementById('playlistImageCover').addEventListener('click', function
     var iframe = document.getElementById('embed-iframe')
     if (has_embed == 1) {
         console.log("THE IFRAME IS SHOWING");
-        displayDiv = document.getElementById("embed-iframe");
-        displayDiv = removeChild(displayDiv.lastChild);
+        // displayDiv = document.getElementById("embed-iframe");
+        // displayDiv = removeChild(displayDiv.lastChild);
+        embedController.destroy();
+        // var embedController = null; // embed Controller
     }
 
 })
@@ -103,6 +106,9 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
 
         })
     
+
+    // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
+    // and works on the assumption that the below getRandomSong has been called at least once?
     getRandomSong(playlistIndex).then(song => {
         console.log("Random song from selected playlist: ", song);
         curr_song = song;
@@ -120,47 +126,67 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
             .then(response => response.json())
             .then(data => {
                 console.log(data.songURL);
-                curr_song_url = data.songURL;
+                curr_song_url = data.songURL; 
+                //need to log the last selected song.
+                if (curr_song_url == lastsongselected){
+                    console.log("The logic for checking if it is the same as the last selected song is working!");
+                }
+                else{
+                    lastsongselected = curr_song_url;
+                }
             })
-    });
-    console.log("CRUSHED YOUR HAND", URLS[playlistIndex]);
 
+            /*
+            IMPORTANT IMPORTANT!
+            With the way I'm currently implementing this, we need to make sure that the input user playlist is greater than just one
+            song! Otherwise we'll probably get stuck in an inifinite loop of calling the same function over and over. This likewise needs
+            to be scaled up depending on if I make the pseudo-random re-roll a queue of the last-x songs. Maybe have an alternative case in
+            the code somewhere that doesn't trigger the last-x comparison if the length of the playlist isn't long enough?
+            
+            Current idea for implementation: encapsulate the getting of the random song into a function and have the if-else logic branch
+            call the function recursively until the curr_song_url and the lastsongselected don't match?
+
+            Alternatively, we can change the implementation of getrandomSong itself to behave differently if passed a song --> like a restriction
+            that bars that song from being chosen again?
+            */
+            .then(createEmbed)
+    });
+
+    //unhide the play music clip button
+    document.getElementById('startGame').hidden = false;
+   
 })
 
 
-document.getElementById('createEmbed').addEventListener('click', function () {
-    console.log("Show embed button pressed");
+// document.getElementById('createEmbed').addEventListener('click', function () {
+//     console.log("Show embed button pressed");
 
-    if (has_embed == 0 && curr_song_url != null) { // doesn't have embed
-        document.getElementById("embed-iframe").hidden = false; // unhide the embed
+//     if(has_embed == 0 && curr_song_url != null){ // doesn't have embed
+//         document.getElementById("embed-iframe").hidden = false; // unhide the embed
+    
+    
+//         window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
+//             console.log("THE API IS READY AND AVAILABLE");
+//             const element = document.getElementById('embed-iframe');
+//             const options = {uri: curr_song_url};
+//             const callback = (EmbedController) => {embedController = EmbedController};
+//             IFrameAPI.createController(element, options, callback);
+//         };
+    
+//         console.log("Completed embed function")
+//         has_embed = 1; // we now have an embed and attempt playing a song.
+        
+//     }
+//     else{
+//         console.log("Already have embed, or curr_song_url is null");
+//     }
+// }
 
-
-        window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
-            console.log("THE API IS READY AND AVAILABLE");
-            const element = document.getElementById('embed-iframe');
-            const options = { 
-                uri: curr_song_url,
-                height: '0', // make the embed invisible by setting it's height and width to 0.
-                width: '0%'
-             };
-            const callback = (EmbedController) => { embedController = EmbedController };
-            IFrameAPI.createController(element, options, callback);
-        };
-
-        console.log("Completed embed function")
-        has_embed = 1; // we now have an embed and attempt playing a song.
-
-    }
-    else {
-        embedController.loadUri(curr_song_url);
-        }
-    }
-
-)
+// )
 
 
 
-
+// I think this code is depreciated?
 document.getElementById('startGame').addEventListener('click', function () {    // https://web.archive.org/web/20191026192215/https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
     console.log("Pressed start Game");
 
@@ -201,7 +227,8 @@ async function getRandomSong(val) { // when passed a playlist index, IE 2 would 
 
     const listItem = document.createElement('li');
     listItem.textContent = songData;
-    randomSongs.appendChild(listItem);
+    randomSongs.appendChild(listItem); // could use this by leveraging it as a cache to check if the song has been pulled for pseudo random song?
+
     guessCheckToggle(1);
 
     return songData; // returns a random song based off of val.
@@ -294,8 +321,10 @@ function loadPlaylists() {
             // debug line for rendering list of user playlists visible. might delete later.
             if (debug == 1) {
                 document.getElementById('playlistIntro').hidden = false;
-                const playlistContainer = document.getElementById('playlistContainer');
-                playlistContainer.hidden = false;
+                document.getElementById('playlistContainer').hidden = false;
+                document.getElementById('randomSongsWrapper').hidden = false;
+                document.getElementById('randomSongIntro').hidden = false;
+                document.getElementById('randomSongs').hidden = false;
             }
             var select = document.getElementById("playlists")
             playlistContainer.innerHTML = '';
@@ -328,6 +357,30 @@ function loadPlaylists() {
         coverHTML.src = coverURLS[i]; // set the src of the image on the website, to the selected playlist image. 
     coverHTML.style.display = 'block';
 
+}
+
+function createEmbed() {
+    console.log("Show embed button pressed");
+
+    if(has_embed == 0 && curr_song_url != null){ // doesn't have embed
+        document.getElementById("embed-iframe").hidden = false; // unhide the embed
+    
+    
+        window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
+            console.log("THE API IS READY AND AVAILABLE");
+            const element = document.getElementById('embed-iframe');
+            const options = {uri: curr_song_url};
+            const callback = (EmbedController) => {embedController = EmbedController};
+            IFrameAPI.createController(element, options, callback);
+        };
+    
+        console.log("Completed embed function")
+        has_embed = 1; // we now have an embed and attempt playing a song.
+        
+    }
+    else{
+        console.log("Already have embed, or curr_song_url is null");
+    }
 }
 
 //helper function to delay on the website. Very strange since we are in JS, use sparingly.

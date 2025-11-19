@@ -10,8 +10,6 @@
 
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
-
-
     <div id="headerContainer">
         <div id="logoTitle">
             <div id="logoTitle">
@@ -21,8 +19,9 @@
         </div>
         <div id="buttonRow">
             <select name="playlists" id="playlists" onchange="PrintOutSelected();"> </select>
-            <button id="startGame" name="startGame">Start Game</button>
-            <button id="createEmbed" name="createEmbed">Create embed</button>
+            <!-- Button is now depreciated, remove soon
+                <button id="createEmbed" name="createEmbed">Create embed</button>
+            -->
         </div>
     </div>
     
@@ -40,9 +39,9 @@
         <ul id="playlistContainer" hidden></ul>
 
 
-        <p> Random song from selected playlist</p>
-        <div id="randomSongsWrapper">
-            <ul id="randomSongs"> </ul>
+        <p id="randomSongIntro" hidden> Random song from selected playlist</p>
+        <div id="randomSongsWrapper" hidden>
+            <ul id="randomSongs" hidden> </ul>
         </div>
         <button id="selectPlaylist" name="selectPlaylist"> Select this playlist </button>
         <input type="image" src="" name="playlistShown" class="btTxt" id="playlistImageCover" hidden>
@@ -56,7 +55,9 @@
             <input type="button" id="userGuessSubmit" value="Submit"><br>
         </div>
         <p id="guessCountDisplay" hidden></p>
-        <div id="embed-iframe" name="embed-iframe" style="visibility: visible;"> </div>
+        <button id="startGame" name="startGame" hidden>Play Clip</button>
+        <div id="embed-iframe" name="embed-iframe" display="block">
+        </div>
     </div>
 
     <!--   Script loading tag must be at bottom of the page, otherwise js page won't load correctly!   -->
