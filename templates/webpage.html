@@ -26,7 +26,6 @@
         </div>
     </div>
     
-    <div id="thing" style="display: none;"><button> ERmmmmmmmmm</button> </div>
     
     <!--    I'm encapsulating all the elements that go into the game proper to make it easier to
             hide elements that won't work before the user selects a playlist for the first time.
@@ -50,6 +49,10 @@
         <div id="userGuessElements" hidden>
             <label for="userGuess">Enter your guess here:</label>
             <input type="text" id="userGuess" name="userGuess">
+            <datalist id = "allRandomSongs">
+                
+            </datalist>
+
             <input type="button" id="userGuessSubmit" value="Submit"><br>
         </div>
         <p id="guessCountDisplay" hidden></p>

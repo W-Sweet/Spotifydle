@@ -84,12 +84,29 @@ document.getElementById('playlistImageCover').addEventListener('click', function
 
 document.getElementById('selectPlaylist').addEventListener('click', function () { //when the Select this playlist button is pressed, it will select a random song from said playlist and show it on the website. 
     console.log("Hit select this playlist");
+
+
+
+        fetch('/getAllSongs', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                playlistURL: (URLS[playlistIndex])
+            })
+            //                                                                  THE DEEPEST SHADE OF TRUE BLUE
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.randomSongs);
+            })
+
+        })
+    
     getRandomSong(playlistIndex).then(song => {
         console.log("Random song from selected playlist: ", song);
         curr_song = song;
-
-
-        //testing code for getting current song URL
+        //Get current song url, for later use in creating embed. 
         fetch('/getSongURL', {
             method: 'POST',
             headers: {
@@ -106,6 +123,7 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
                 curr_song_url = data.songURL;
             })
     });
+    console.log("CRUSHED YOUR HAND", URLS[playlistIndex]);
 
 })
 
@@ -184,7 +202,6 @@ async function getRandomSong(val) { // when passed a playlist index, IE 2 would 
     const listItem = document.createElement('li');
     listItem.textContent = songData;
     randomSongs.appendChild(listItem);
-
     guessCheckToggle(1);
 
     return songData; // returns a random song based off of val.

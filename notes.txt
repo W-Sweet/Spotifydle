@@ -44,6 +44,9 @@ https://www.youtube.com/watch?v=2if5xSaZJlg&t=766s
 
 
 
+port error: 
+https://stackoverflow.com/questions/73309491/port-xxxx-is-in-use-by-another-program-either-identify-and-stop-that-program-o
+
 
 
 
