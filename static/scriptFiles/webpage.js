@@ -13,6 +13,8 @@ var debug = 1; // flag programmer sets while working on the page. Enable debug r
 var embedController = null; // embed Controller
 var timeToPlaySongs = [15000, 12000, 8000, 4000, 2000]
 var lastsongselected  // tracker for the last song selected by spotifydle. intended to prevent players recieving the same song two times in a row randomly
+const guessList = document.getElementById('allRandomSongs')
+var allRandomSongs = []; //array containing all random songs of a selected playlist
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -73,39 +75,33 @@ document.getElementById('playlistImageCover').addEventListener('click', function
     coverHTML.src = coverURLS[playlistIndex]; // re-display the playlist on the website. 
     coverHTML.style.display = 'block';
 
-    // attempting to implement functionality for refreshing the embed when the user switches albums?
-    var iframe = document.getElementById('embed-iframe')
-    if (has_embed == 1) {
-        console.log("THE IFRAME IS SHOWING");
-        // displayDiv = document.getElementById("embed-iframe");
-        // displayDiv = removeChild(displayDiv.lastChild);
-        embedController.destroy();
-        // var embedController = null; // embed Controller
-    }
-
 })
 
 document.getElementById('selectPlaylist').addEventListener('click', function () { //when the Select this playlist button is pressed, it will select a random song from said playlist and show it on the website. 
     console.log("Hit select this playlist");
+    allRandomSongs = []; // cleaning the dropdown menu
+    guessList.innerHTML = '';
 
-
-
-        fetch('/getAllSongs', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                playlistURL: (URLS[playlistIndex])
+    fetch('/getAllSongs', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            playlistURL: (URLS[playlistIndex])
             })
-            //                                                                  THE DEEPEST SHADE OF TRUE BLUE
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.randomSongs);
-            })
-
         })
-    
+        .then(response => response.json())
+        .then(data => {
+            allRandomSongs = data.randomSongs;
+            for (song of allRandomSongs){
+                const addOption = document.createElement('option');
+                addOption.value = song;
+                guessList.appendChild(addOption);
+            }
+        })
+
+
 
     // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
     // and works on the assumption that the below getRandomSong has been called at least once?
@@ -126,12 +122,12 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
             .then(response => response.json())
             .then(data => {
                 console.log(data.songURL);
-                curr_song_url = data.songURL; 
+                curr_song_url = data.songURL;
                 //need to log the last selected song.
-                if (curr_song_url == lastsongselected){
+                if (curr_song_url == lastsongselected) {
                     console.log("The logic for checking if it is the same as the last selected song is working!");
                 }
-                else{
+                else {
                     lastsongselected = curr_song_url;
                 }
             })
@@ -154,39 +150,11 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
 
     //unhide the play music clip button
     document.getElementById('startGame').hidden = false;
-   
+
 })
 
 
-// document.getElementById('createEmbed').addEventListener('click', function () {
-//     console.log("Show embed button pressed");
-
-//     if(has_embed == 0 && curr_song_url != null){ // doesn't have embed
-//         document.getElementById("embed-iframe").hidden = false; // unhide the embed
-    
-    
-//         window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
-//             console.log("THE API IS READY AND AVAILABLE");
-//             const element = document.getElementById('embed-iframe');
-//             const options = {uri: curr_song_url};
-//             const callback = (EmbedController) => {embedController = EmbedController};
-//             IFrameAPI.createController(element, options, callback);
-//         };
-    
-//         console.log("Completed embed function")
-//         has_embed = 1; // we now have an embed and attempt playing a song.
-        
-//     }
-//     else{
-//         console.log("Already have embed, or curr_song_url is null");
-//     }
-// }
-
-// )
-
-
-
-// I think this code is depreciated?
+// I think this code is depreciated? We would need to move the first line. 
 document.getElementById('startGame').addEventListener('click', function () {    // https://web.archive.org/web/20191026192215/https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
     console.log("Pressed start Game");
 
@@ -262,7 +230,7 @@ function guessCheck() {
         }
         else {
             embedController.pause(); // restart song
-            embedController.play(); 
+            embedController.play();
             sleep(timeToPlaySongs[current_guesses - 1]).then(() => { embedController.pause(); console.log("Pausing song"); }); //play song for a set amount of time, correlating to the amount of guesses left. 
             console.log("Current Guesses:", current_guesses);
             updateGuessCountDisplay();
@@ -352,7 +320,6 @@ function loadPlaylists() {
     const coverHTML = document.getElementById('playlistImageCover');
     console.log("pressed show cover")
     console.log("Selected playlist", selectedDropdownPlaylist);
-    //removed a lot of redundant code that populated the playlistImageCover with the image URLS.
     for (let i = 0; i < coverURLS.length - 1; i++)
         coverHTML.src = coverURLS[i]; // set the src of the image on the website, to the selected playlist image. 
     coverHTML.style.display = 'block';
@@ -362,23 +329,26 @@ function loadPlaylists() {
 function createEmbed() {
     console.log("Show embed button pressed");
 
-    if(has_embed == 0 && curr_song_url != null){ // doesn't have embed
+    if (has_embed == 0 && curr_song_url != null) { // doesn't have embed
         document.getElementById("embed-iframe").hidden = false; // unhide the embed
-    
-    
+
+
         window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
             console.log("THE API IS READY AND AVAILABLE");
             const element = document.getElementById('embed-iframe');
-            const options = {uri: curr_song_url};
-            const callback = (EmbedController) => {embedController = EmbedController};
+            const options = { 
+                uri: curr_song_url,
+                height: '0',
+                width: '0%'
+             };
+            const callback = (EmbedController) => { embedController = EmbedController };
             IFrameAPI.createController(element, options, callback);
         };
-    
         console.log("Completed embed function")
         has_embed = 1; // we now have an embed and attempt playing a song.
-        
+
     }
-    else{
+    else {
         console.log("Already have embed, or curr_song_url is null");
     }
 }

@@ -165,7 +165,6 @@ def getSongURL(playlistURL, songName):
     return returnVal
 
 def getAllSongs(playlistURL):
-    print("HE IS HERE")
     returnVal = []
     for song in sp.playlist_tracks(playlistURL)["items"]:
         Data = song["track"]["name"]

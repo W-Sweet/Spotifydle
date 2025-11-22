@@ -37,6 +37,9 @@ Tasks left to do:
     - search bar for playlists, IE a user has too many playlists, don't want to scroll through 40 million playlists.
 
 
+datalist:
+https://demo.agektmr.com/datalist/
+
 Spotipy docs:
 https://spotipy.readthedocs.io/en/2.25.1/
 
