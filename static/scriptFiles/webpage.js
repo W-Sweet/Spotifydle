@@ -13,10 +13,10 @@ var debug = 1; // flag programmer sets while working on the page. Enable debug r
 var embedController = null; // embed Controller
 var timeToPlaySongs = [15000, 12000, 8000, 4000, 2000]
 var lastsongselected  // tracker for the last song selected by spotifydle. intended to prevent players recieving the same song two times in a row randomly
-const guessList = document.getElementById('allRandomSongs')
 var allRandomSongs = []; //array containing all random songs of a selected playlist
 var playlistcache // cache for all the songs in the currently selected playlist
 var cur_playlist_numsongs = -1
+const dataList = document.getElementById('allRandomSongs')
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -84,22 +84,27 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
 
 
 
-        fetch('/getAllSongs', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                playlistURL: (URLS[playlistIndex])
+    fetch('/getAllSongs', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            playlistURL: URLS[playlistIndex]
             })
-            //                                                                  THE DEEPEST SHADE OF TRUE BLUE
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.randomSongs);
-            })
-
         })
-    
+        .then(response => response.json())
+        .then(data => {
+            console.log("Adding");
+            dataList.innerHTML = ''; // empty the datalist
+            data.randomSongs.forEach(songName => { //go through the random songs, and add them to the datalist
+                const option = document.createElement('option');
+                option.value = songName;
+                console.log(songName)
+                dataList.appendChild(option);
+            });
+        })
+
 
     // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
     // and works on the assumption that the below getRandomSong has been called at least once?
@@ -120,12 +125,12 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
             .then(response => response.json())
             .then(data => {
                 console.log(data.songURL);
-                curr_song_url = data.songURL; 
+                curr_song_url = data.songURL;
                 //need to log the last selected song.
-                if (curr_song_url == lastsongselected){
+                if (curr_song_url == lastsongselected) {
                     console.log("The logic for checking if it is the same as the last selected song is working!");
                 }
-                else{
+                else {
                     lastsongselected = curr_song_url;
                 }
             })
@@ -148,7 +153,7 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
 
     //unhide the play music clip button
     document.getElementById('startGame').hidden = false;
-   
+
 })
 
 
@@ -336,11 +341,11 @@ function createEmbed() {
         window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
             console.log("THE API IS READY AND AVAILABLE");
             const element = document.getElementById('embed-iframe');
-            const options = { 
+            const options = {
                 uri: curr_song_url,
                 height: '0',
                 width: '0%'
-             };
+            };
             const callback = (EmbedController) => { embedController = EmbedController };
             IFrameAPI.createController(element, options, callback);
         };
@@ -349,6 +354,7 @@ function createEmbed() {
 
     }
     else {
+        embedController.loadUri(curr_song_url);
         console.log("Already have embed, or curr_song_url is null");
     }
 }
@@ -359,26 +365,11 @@ function sleep(ms) {
 }
 
 function selectPlaylist() {
-        console.log("Hit select this playlist");
+    console.log("Hit select this playlist");
 
-        // This was just breaking the code for some reason. Commenting it out until we can get it working
 
-        // fetch('/getAllSongs', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         playlistURL: (URLS[playlistIndex])
-        //     })
-        //     //                                                                  THE DEEPEST SHADE OF TRUE BLUE
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         console.log(data.randomSongs);
-        //     })
 
-        // })
-    
+
 
     // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
     // and works on the assumption that the below getRandomSong has been called at least once?
@@ -399,15 +390,15 @@ function selectPlaylist() {
             .then(response => response.json())
             .then(data => {
                 console.log(data.songURL);
-                curr_song_url = data.songURL; 
+                curr_song_url = data.songURL;
                 //need to log the last selected song.
-                if (curr_song_url == lastsongselected && cur_playlist_numsongs != 1){
+                if (curr_song_url == lastsongselected && cur_playlist_numsongs != 1) {
                     console.log("The logic for checking if it is the same as the last selected song is working!");
                     selectPlaylist();
                     // ok so it checks the last played song and resets if its the same but lowkey this implementation sucks
                     // I have no idea if it is even remotely scalable
                 }
-                else{
+                else {
                     lastsongselected = curr_song_url;
                 }
             })
@@ -430,5 +421,5 @@ function selectPlaylist() {
 
     //unhide the play music clip button
     document.getElementById('startGame').hidden = false;
-   
+
 }

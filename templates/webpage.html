@@ -47,10 +47,11 @@
         <input type="image" src="" name="playlistShown" class="btTxt" id="playlistImageCover" hidden>
         <div id="userGuessElements" hidden>
             <label for="userGuess">Enter your guess here:</label>
-            <input type="text" id="userGuess" name="userGuess">
+            
+            <input type="text" id="userGuess" name="userGuess" list="allRandomSongs">
             <!--Datalist to fill in user guess -->
-            <datalist id = "allRandomSongs">
-                
+            <datalist id = "allRandomSongs"> 
+                    
             </datalist>
             
             <input type="button" id="userGuessSubmit" value="Submit"><br>
