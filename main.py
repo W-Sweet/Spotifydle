@@ -13,7 +13,7 @@ app.config['SECRET_KEY'] = os.urandom(64) # create a random key to get session i
 
 client_id = '1a15d168c5814a738c60fc39f634d8a2'
 client_secret = 'e725f96b4cfd4482b2974f4c27cf92d0'
-redirect_uri = 'http://localhost:5000/callback'
+redirect_uri = 'http://127.0.0.1:5000/callback'
 scope = 'playlist-read-private'
 
 cache_handler = FlaskSessionCacheHandler(session) 
@@ -27,7 +27,6 @@ sp_oauth = SpotifyOAuth(
 )
 
 sp = Spotify(auth_manager=sp_oauth) #where we get the spotify data from.
-                                                                    # WORKING HERE https://github.com/spotipy-dev/spotipy/issues/593 WHY DOES IT SAY NEED SPOTIFY PREMIUM ???
 
 
 

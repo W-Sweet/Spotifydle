@@ -83,7 +83,7 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
     console.log("Hit select this playlist");
 
 
-
+    //getAllSongs is called to get every song to be put in the datalist dropdown menu. 
     fetch('/getAllSongs', {
         method: 'POST',
         headers: {
@@ -91,8 +91,8 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
         },
         body: JSON.stringify({
             playlistURL: URLS[playlistIndex]
-            })
         })
+    })
         .then(response => response.json())
         .then(data => {
             console.log("Adding");
@@ -100,7 +100,6 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
             data.randomSongs.forEach(songName => { //go through the random songs, and add them to the datalist
                 const option = document.createElement('option');
                 option.value = songName;
-                console.log(songName)
                 dataList.appendChild(option);
             });
         })
@@ -148,29 +147,11 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
             Alternatively, we can change the implementation of getrandomSong itself to behave differently if passed a song --> like a restriction
             that bars that song from being chosen again?
             */
-            .then(createEmbed)
+            .then(createEmbed).then(startGame)
     });
-
-    //unhide the play music clip button
-    document.getElementById('startGame').hidden = false;
-
 })
 
 
-// I think this code is depreciated? We would need to move the first line. 
-document.getElementById('startGame').addEventListener('click', function () {    // https://web.archive.org/web/20191026192215/https://developer.spotify.com/documentation/web-api/reference/player/start-a-users-playback/
-    console.log("Pressed start Game");
-
-    if (embedController != null) {
-        console.log("starting game")
-        embedController.play();
-        console.log("Playing for ", timeToPlaySongs[4]);
-        sleep(timeToPlaySongs[4]).then(() => { embedController.pause(); console.log("Pausing song"); }); // we let the song play for the shortest interval, then pause and wait for the user to guess. 
-    }
-    else {
-        console.log("embedController is null")
-    }
-})
 
 document.getElementById('userGuessSubmit').addEventListener('click', guessCheck)
 
@@ -280,9 +261,7 @@ function updateGuessCountDisplay() {
 
 /* 
     Currently, the guess check will work off of directly comparing the input string to the name of the song
-    as fetched by spotipy. As it is unreasonable to expect the user to be able to get the string value
-    exactly correct, I suggest we eventually implement a song search function in the style of something like
-    bandle.
+    as fetched by spotipy.
 */
 
 function loadPlaylists() {
@@ -337,26 +316,40 @@ function createEmbed() {
     if (has_embed == 0 && curr_song_url != null) { // doesn't have embed
         document.getElementById("embed-iframe").hidden = false; // unhide the embed
 
-
-        window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
-            console.log("THE API IS READY AND AVAILABLE");
-            const element = document.getElementById('embed-iframe');
-            const options = {
-                uri: curr_song_url,
-                height: '0',
-                width: '0%'
+        return new Promise((resolve) => {
+            window.onSpotifyIframeApiReady = (IFrameAPI) => { // wait for spotifyIframeApi to ready
+                const element = document.getElementById('embed-iframe');
+                const options = {
+                    uri: curr_song_url,
+                    height: '0',
+                    width: '0%'
+                };
+                const callback = (EmbedController) => {embedController = EmbedController; resolve(); };
+                IFrameAPI.createController(element, options, callback);
             };
-            const callback = (EmbedController) => { embedController = EmbedController };
-            IFrameAPI.createController(element, options, callback);
-        };
-        console.log("Completed embed function")
-        has_embed = 1; // we now have an embed and attempt playing a song.
+            console.log("Completed embed function setup")
+            has_embed = 1; // we now have an embed
 
-    }
-    else {
+            if (window.IFrameAPI) {
+                window.onSpotifyIframeApiReady(window.IFrameAPI);
+            }
+        });
+
+    } else if (has_embed == 1 && curr_song_url != null) {
+        // If the embed already exists, load the new URI and immediately return a resolved Promise
         embedController.loadUri(curr_song_url);
-        console.log("Already have embed, or curr_song_url is null");
+        console.log("Already have embed, loading new URI");
+        return Promise.resolve();
     }
+    // If curr_song_url is null, return a resolved Promise immediately
+    return Promise.resolve();
+}
+
+function startGame() {
+    console.log("starting game real");
+    embedController.play();
+    console.log("Playing for ", timeToPlaySongs[4]);
+    sleep(timeToPlaySongs[4]).then(() => { embedController.pause(); console.log("Pausing song"); }); // we let the song play for the shortest interval, then pause and wait for the user to guess. 
 }
 
 //helper function to delay on the website. Very strange since we are in JS, use sparingly.
@@ -364,62 +357,58 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function selectPlaylist() {
-    console.log("Hit select this playlist");
 
+//Is any of this ever called? I'm commenting it out for now. 
 
+// function selectPlaylist() {
+//     console.log("Hit select this playlist");
+//     console.log("And I sleep in the belly of you");
+//     // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
+//     // and works on the assumption that the below getRandomSong has been called at least once?
+//     getRandomSong(playlistIndex).then(song => {
+//         console.log("Random song from selected playlist: ", song);
+//         curr_song = song;
+//         //Get current song url, for later use in creating embed. 
+//         fetch('/getSongURL', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({
+//                 playlistURL: (URLS[playlistIndex]),
+//                 songName: (curr_song)
+//             })
+//         })
+//             .then(response => response.json())
+//             .then(data => {
+//                 console.log(data.songURL);
+//                 curr_song_url = data.songURL;
+//                 //need to log the last selected song.
+//                 if (curr_song_url == lastsongselected && cur_playlist_numsongs != 1) {
+//                     console.log("The logic for checking if it is the same as the last selected song is working!");
+//                     selectPlaylist();
+//                     // ok so it checks the last played song and resets if its the same but lowkey this implementation sucks
+//                     // I have no idea if it is even remotely scalable
+//                 }
+//                 else {
+//                     lastsongselected = curr_song_url;
+//                 }
+//             })
 
-
-
-    // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
-    // and works on the assumption that the below getRandomSong has been called at least once?
-    getRandomSong(playlistIndex).then(song => {
-        console.log("Random song from selected playlist: ", song);
-        curr_song = song;
-        //Get current song url, for later use in creating embed. 
-        fetch('/getSongURL', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                playlistURL: (URLS[playlistIndex]),
-                songName: (curr_song)
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.songURL);
-                curr_song_url = data.songURL;
-                //need to log the last selected song.
-                if (curr_song_url == lastsongselected && cur_playlist_numsongs != 1) {
-                    console.log("The logic for checking if it is the same as the last selected song is working!");
-                    selectPlaylist();
-                    // ok so it checks the last played song and resets if its the same but lowkey this implementation sucks
-                    // I have no idea if it is even remotely scalable
-                }
-                else {
-                    lastsongselected = curr_song_url;
-                }
-            })
-
-            /*
-            IMPORTANT IMPORTANT!
-            With the way I'm currently implementing this, we need to make sure that the input user playlist is greater than just one
-            song! Otherwise we'll probably get stuck in an inifinite loop of calling the same function over and over. This likewise needs
-            to be scaled up depending on if I make the pseudo-random re-roll a queue of the last-x songs. Maybe have an alternative case in
-            the code somewhere that doesn't trigger the last-x comparison if the length of the playlist isn't long enough?
+//             /*
+//             IMPORTANT IMPORTANT!
+//             With the way I'm currently implementing this, we need to make sure that the input user playlist is greater than just one
+//             song! Otherwise we'll probably get stuck in an inifinite loop of calling the same function over and over. This likewise needs
+//             to be scaled up depending on if I make the pseudo-random re-roll a queue of the last-x songs. Maybe have an alternative case in
+//             the code somewhere that doesn't trigger the last-x comparison if the length of the playlist isn't long enough?
             
-            Current idea for implementation: encapsulate the getting of the random song into a function and have the if-else logic branch
-            call the function recursively until the curr_song_url and the lastsongselected don't match?
+//             Current idea for implementation: encapsulate the getting of the random song into a function and have the if-else logic branch
+//             call the function recursively until the curr_song_url and the lastsongselected don't match?
 
-            Alternatively, we can change the implementation of getrandomSong itself to behave differently if passed a song --> like a restriction
-            that bars that song from being chosen again?
-            */
-            .then(createEmbed)
-    });
+//             Alternatively, we can change the implementation of getrandomSong itself to behave differently if passed a song --> like a restriction
+//             that bars that song from being chosen again?
+//             */
+//             .then(createEmbed)
+//     });
 
-    //unhide the play music clip button
-    document.getElementById('startGame').hidden = false;
-
-}
+// }
