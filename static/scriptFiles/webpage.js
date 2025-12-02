@@ -79,77 +79,7 @@ document.getElementById('playlistImageCover').addEventListener('click', function
 
 })
 
-document.getElementById('selectPlaylist').addEventListener('click', function () { //when the Select this playlist button is pressed, it will select a random song from said playlist and show it on the website. 
-    console.log("Hit select this playlist");
-
-
-    //getAllSongs is called to get every song to be put in the datalist dropdown menu. 
-    fetch('/getAllSongs', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            playlistURL: URLS[playlistIndex]
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Adding");
-            dataList.innerHTML = ''; // empty the datalist
-            data.randomSongs.forEach(songName => { //go through the random songs, and add them to the datalist
-                const option = document.createElement('option');
-                option.value = songName;
-                dataList.appendChild(option);
-            });
-        })
-
-
-    // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
-    // and works on the assumption that the below getRandomSong has been called at least once?
-    getRandomSong(playlistIndex).then(song => {
-        console.log("Random song from selected playlist: ", song);
-        curr_song = song;
-        //Get current song url, for later use in creating embed. 
-        fetch('/getSongURL', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                playlistURL: (URLS[playlistIndex]),
-                songName: (curr_song)
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.songURL);
-                curr_song_url = data.songURL;
-                //need to log the last selected song.
-                if (curr_song_url == lastsongselected) {
-                    console.log("The logic for checking if it is the same as the last selected song is working!");
-                }
-                else {
-                    lastsongselected = curr_song_url;
-                }
-            })
-
-            /*
-            IMPORTANT IMPORTANT!
-            With the way I'm currently implementing this, we need to make sure that the input user playlist is greater than just one
-            song! Otherwise we'll probably get stuck in an inifinite loop of calling the same function over and over. This likewise needs
-            to be scaled up depending on if I make the pseudo-random re-roll a queue of the last-x songs. Maybe have an alternative case in
-            the code somewhere that doesn't trigger the last-x comparison if the length of the playlist isn't long enough?
-            
-            Current idea for implementation: encapsulate the getting of the random song into a function and have the if-else logic branch
-            call the function recursively until the curr_song_url and the lastsongselected don't match?
-
-            Alternatively, we can change the implementation of getrandomSong itself to behave differently if passed a song --> like a restriction
-            that bars that song from being chosen again?
-            */
-            .then(createEmbed).then(startGame)
-    });
-})
+document.getElementById('selectPlaylist').addEventListener('click', selectPlaylist)
 
 
 
@@ -357,58 +287,75 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function selectPlaylist() {
+    console.log("Hit select this playlist");
 
-//Is any of this ever called? I'm commenting it out for now. 
 
-// function selectPlaylist() {
-//     console.log("Hit select this playlist");
-//     console.log("And I sleep in the belly of you");
-//     // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
-//     // and works on the assumption that the below getRandomSong has been called at least once?
-//     getRandomSong(playlistIndex).then(song => {
-//         console.log("Random song from selected playlist: ", song);
-//         curr_song = song;
-//         //Get current song url, for later use in creating embed. 
-//         fetch('/getSongURL', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify({
-//                 playlistURL: (URLS[playlistIndex]),
-//                 songName: (curr_song)
-//             })
-//         })
-//             .then(response => response.json())
-//             .then(data => {
-//                 console.log(data.songURL);
-//                 curr_song_url = data.songURL;
-//                 //need to log the last selected song.
-//                 if (curr_song_url == lastsongselected && cur_playlist_numsongs != 1) {
-//                     console.log("The logic for checking if it is the same as the last selected song is working!");
-//                     selectPlaylist();
-//                     // ok so it checks the last played song and resets if its the same but lowkey this implementation sucks
-//                     // I have no idea if it is even remotely scalable
-//                 }
-//                 else {
-//                     lastsongselected = curr_song_url;
-//                 }
-//             })
+    //getAllSongs is called to get every song to be put in the datalist dropdown menu. 
+    fetch('/getAllSongs', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            playlistURL: URLS[playlistIndex]
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Adding");
+            dataList.innerHTML = ''; // empty the datalist
+            data.randomSongs.forEach(songName => { //go through the random songs, and add them to the datalist
+                const option = document.createElement('option');
+                option.value = songName;
+                dataList.appendChild(option);
+            });
+        })
 
-//             /*
-//             IMPORTANT IMPORTANT!
-//             With the way I'm currently implementing this, we need to make sure that the input user playlist is greater than just one
-//             song! Otherwise we'll probably get stuck in an inifinite loop of calling the same function over and over. This likewise needs
-//             to be scaled up depending on if I make the pseudo-random re-roll a queue of the last-x songs. Maybe have an alternative case in
-//             the code somewhere that doesn't trigger the last-x comparison if the length of the playlist isn't long enough?
+
+    // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
+    // and works on the assumption that the below getRandomSong has been called at least once?
+    getRandomSong(playlistIndex).then(song => {
+        console.log("Random song from selected playlist: ", song);
+        curr_song = song;
+        //Get current song url, for later use in creating embed. 
+        fetch('/getSongURL', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                playlistURL: (URLS[playlistIndex]),
+                songName: (curr_song)
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.songURL);
+                curr_song_url = data.songURL;
+                //need to log the last selected song.
+                if (curr_song_url == lastsongselected && cur_playlist_numsongs != 1) {
+                    console.log("The logic for checking if it is the same as the last selected song is working!");
+                    selectPlaylist();
+                }
+                else {
+                    lastsongselected = curr_song_url;
+                }
+            })
+
+            /*
+            IMPORTANT IMPORTANT!
+            With the way I'm currently implementing this, we need to make sure that the input user playlist is greater than just one
+            song! Otherwise we'll probably get stuck in an inifinite loop of calling the same function over and over. This likewise needs
+            to be scaled up depending on if I make the pseudo-random re-roll a queue of the last-x songs. Maybe have an alternative case in
+            the code somewhere that doesn't trigger the last-x comparison if the length of the playlist isn't long enough?
             
-//             Current idea for implementation: encapsulate the getting of the random song into a function and have the if-else logic branch
-//             call the function recursively until the curr_song_url and the lastsongselected don't match?
+            Current idea for implementation: encapsulate the getting of the random song into a function and have the if-else logic branch
+            call the function recursively until the curr_song_url and the lastsongselected don't match?
 
-//             Alternatively, we can change the implementation of getrandomSong itself to behave differently if passed a song --> like a restriction
-//             that bars that song from being chosen again?
-//             */
-//             .then(createEmbed)
-//     });
-
-// }
+            Alternatively, we can change the implementation of getrandomSong itself to behave differently if passed a song --> like a restriction
+            that bars that song from being chosen again?
+            */
+            .then(createEmbed).then(startGame)
+    });
+}
