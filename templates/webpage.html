@@ -5,9 +5,9 @@
     <title> Spotifydle </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spotifydle.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='image_resources/favicon.ico') }}">
-
+    
 <body>
-
+    
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
     <div id="headerContainer">
@@ -15,36 +15,29 @@
             <div id="logoTitle">
                 <img src="{{ url_for('static', filename='image_resources/spotifydle.png') }}" id="logo">
                 <h1 id="pageTitle">Spotifydle</h1>
+                
             </div>
         </div>
-        <div id="buttonRow">
-            <select name="playlists" id="playlists" onchange="PrintOutSelected();"> </select>
-            <!-- Button is now depreciated, remove soon
-                <button id="createEmbed" name="createEmbed">Create embed</button>
-            -->
-        </div>
+        <p id = "instructToPressCover"> Press on the playlist cover below to cycle to your next playlist. </p>
     </div>
-    
     
     <!--    I'm encapsulating all the elements that go into the game proper to make it easier to
             hide elements that won't work before the user selects a playlist for the first time.
             Likely will not be organized this way forever.    -->
+            
     <div id="gameBody" hidden>
 
-        <!-- 
-            Temp fix on hiding these elements. Since they are depreciated debug
-            elements, might be good to keep them commented out?
-        -->
-        <p id="playlistIntro" hidden> Your playlists </p>
+        
         <ul id="playlistContainer" hidden></ul>
 
 
-        <p id="randomSongIntro" hidden> Random song from selected playlist</p>
+        <!-- <p id="randomSongIntro" hidden> Random song from selected playlist</p> -->
         <div id="randomSongsWrapper" hidden>
             <ul id="randomSongs" hidden> </ul>
         </div>
         <button id="selectPlaylist" name="selectPlaylist"> Select this playlist </button>
         <input type="image" src="" name="playlistShown" class="btTxt" id="playlistImageCover" hidden>
+        <p id="playlistName" name ="playlistName" src = ""></p>
         <div id="userGuessElements" hidden>
             <label for="userGuess">Enter your guess here:</label>
             
@@ -61,7 +54,7 @@
         <div id="embed-iframe" name="embed-iframe" display="block">
         </div>
     </div>
-
+    
     <!--   Script loading tag must be at bottom of the page, otherwise js page won't load correctly!   -->
     <script src="{{ url_for('static', filename='scriptFiles/webpage.js')}}"></script>
 

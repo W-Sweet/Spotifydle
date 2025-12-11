@@ -15,8 +15,11 @@ var timeToPlaySongs = [15000, 12000, 8000, 4000, 2000]
 var lastsongselected  // tracker for the last song selected by spotifydle. intended to prevent players recieving the same song two times in a row randomly
 var allRandomSongs = []; //array containing all random songs of a selected playlist
 var playlistcache // cache for all the songs in the currently selected playlist
-var cur_playlist_numsongs = -1
-const dataList = document.getElementById('allRandomSongs')
+var cur_playlist_numsongs = -1;
+var playlistNames = [];
+const dataList = document.getElementById('allRandomSongs');
+const playlistNameDisplay = document.getElementById('playlistName'); //variable to hold the element on the webpage that displays the currently hovered playlist name. 
+
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -66,13 +69,17 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
 document.getElementById('playlistImageCover').addEventListener('click', function () { //Fucntion to allow the playlist cover to be pressed, which will cause it to display the next playlist looping back to the first playlist when we reach the last playlist.
     const coverHTML = document.getElementById('playlistImageCover');
     console.log("Playlist cover pressed");
+    console.log(playlistNames);
     if (playlistIndex == (coverURLS.length - 1)) { // we are looking at the final playlist.
-        console.log("We are looking at the final playlist and need to loop back to 0.");
+        console.log(playlistIndex);
         playlistIndex = 0;
+        playlistNameDisplay.innerHTML = playlistNames[0][playlistIndex];
     }
+
     else { // increment by 1. 
-        console.log("We are not looking at the last playlist");
+        console.log(playlistIndex);
         playlistIndex++;
+        playlistNameDisplay.innerHTML = playlistNames[0][playlistIndex];
     }
     coverHTML.src = coverURLS[playlistIndex]; // re-display the playlist on the website. 
     coverHTML.style.display = 'block';
@@ -81,7 +88,6 @@ document.getElementById('playlistImageCover').addEventListener('click', function
 
 document.getElementById('selectPlaylist').addEventListener('click', function () { //when the Select this playlist button is pressed, it will select a random song from said playlist and show it on the website. 
     console.log("Hit select this playlist");
-
 
     //getAllSongs is called to get every song to be put in the datalist dropdown menu. 
     fetch('/getAllSongs', {
@@ -95,7 +101,6 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
     })
         .then(response => response.json())
         .then(data => {
-            console.log("Adding");
             dataList.innerHTML = ''; // empty the datalist
             data.randomSongs.forEach(songName => { //go through the random songs, and add them to the datalist
                 const option = document.createElement('option');
@@ -127,7 +132,7 @@ document.getElementById('selectPlaylist').addEventListener('click', function () 
                 curr_song_url = data.songURL;
                 //need to log the last selected song.
                 if (curr_song_url == lastsongselected) {
-                    console.log("The logic for checking if it is the same as the last selected song is working!");
+                    console.log("The logic for checking if it is the same as the last selected song is working!"); // this does work
                 }
                 else {
                     lastsongselected = curr_song_url;
@@ -265,11 +270,14 @@ function updateGuessCountDisplay() {
 */
 
 function loadPlaylists() {
+    console.log("CALL ME WHEN YOUR FEELING DOWN CALL ME WHEN HE'S NOT AROUND")
     document.getElementById('playlistImageCover').hidden = false;
+    playlistNameDisplay.hidden = false;
     fetch('/getPlaylistNames', { method: 'POST' }) // run all playlist names.
         .then(response => response.json())
         .then(data => {
             console.log("PLAYLIST NAMES:", data);
+            playlistNames.push(data);
             // debug line for rendering list of user playlists visible. might delete later.
             if (debug == 1) {
                 document.getElementById('playlistIntro').hidden = false;
@@ -307,7 +315,7 @@ function loadPlaylists() {
     for (let i = 0; i < coverURLS.length - 1; i++)
         coverHTML.src = coverURLS[i]; // set the src of the image on the website, to the selected playlist image. 
     coverHTML.style.display = 'block';
-
+    console.log(playlistNames);
 }
 
 function createEmbed() {
@@ -356,59 +364,3 @@ function startGame() {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-
-//Is any of this ever called? I'm commenting it out for now. 
-
-// function selectPlaylist() {
-//     console.log("Hit select this playlist");
-//     console.log("And I sleep in the belly of you");
-//     // getRandomSong is only called in this context. Would it be possible to make a different function for getRandomSong that takes in a restrict
-//     // and works on the assumption that the below getRandomSong has been called at least once?
-//     getRandomSong(playlistIndex).then(song => {
-//         console.log("Random song from selected playlist: ", song);
-//         curr_song = song;
-//         //Get current song url, for later use in creating embed. 
-//         fetch('/getSongURL', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify({
-//                 playlistURL: (URLS[playlistIndex]),
-//                 songName: (curr_song)
-//             })
-//         })
-//             .then(response => response.json())
-//             .then(data => {
-//                 console.log(data.songURL);
-//                 curr_song_url = data.songURL;
-//                 //need to log the last selected song.
-//                 if (curr_song_url == lastsongselected && cur_playlist_numsongs != 1) {
-//                     console.log("The logic for checking if it is the same as the last selected song is working!");
-//                     selectPlaylist();
-//                     // ok so it checks the last played song and resets if its the same but lowkey this implementation sucks
-//                     // I have no idea if it is even remotely scalable
-//                 }
-//                 else {
-//                     lastsongselected = curr_song_url;
-//                 }
-//             })
-
-//             /*
-//             IMPORTANT IMPORTANT!
-//             With the way I'm currently implementing this, we need to make sure that the input user playlist is greater than just one
-//             song! Otherwise we'll probably get stuck in an inifinite loop of calling the same function over and over. This likewise needs
-//             to be scaled up depending on if I make the pseudo-random re-roll a queue of the last-x songs. Maybe have an alternative case in
-//             the code somewhere that doesn't trigger the last-x comparison if the length of the playlist isn't long enough?
-            
-//             Current idea for implementation: encapsulate the getting of the random song into a function and have the if-else logic branch
-//             call the function recursively until the curr_song_url and the lastsongselected don't match?
-
-//             Alternatively, we can change the implementation of getrandomSong itself to behave differently if passed a song --> like a restriction
-//             that bars that song from being chosen again?
-//             */
-//             .then(createEmbed)
-//     });
-
-// }

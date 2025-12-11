@@ -13,13 +13,6 @@ https://developer.spotify.com/documentation/embeds/references/iframe-api
 Tasks left to do:
     - add case for user that doesn't have playlists
     - make usable for other users, in main.py, lines 14-18
-    - figure out how to play random song on website
-        - figure out how to start and stop song
-        - attach button to starting and stopping
-        - attach button to play song in intervals, ie for one second, four seconds.
-    - Fix UI 
-        - After logging in, a rotating wheel with all playlist covers which the user can scroll through, below said playlists, is a menu where they may select which "game mode", they wish to play.
-        - Above looks something like this, https://cdn.discordapp.com/attachments/1152756493872021534/1310401985870172180/image.png?ex=67451673&is=6743c4f3&hm=46b737f20886e7ce67a2e7f2ac8234406e5269e78a5018e8f39546e947b7e161&
     - Implement game modes
         - First, establish game rules, the technicality of how long a song is played, how many guesses a user gets persong, how many rounds of the game are played in a single game, as well as possibly different "power-ups" that the user can use?
         - Streak system, figure out how to tell if the user has logged into and played the game multiple days in a row, and keep track and somehow display the count.
