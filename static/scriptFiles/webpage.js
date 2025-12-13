@@ -204,12 +204,14 @@ function guessCheckToggle(status) {
         current_guesses = -1; //sets the guess counter value to the default
         document.getElementById('userGuessElements').hidden = true;   //hides the guess submit button
         document.getElementById('winlossDisplay').hidden = false;
+        document.getElementById('averageGuess').hidden = false;
     }
     else {
         current_guesses = 5; //sets the guess counter value to the max
         document.getElementById('userGuessElements').hidden = false;  //shows the guess submit button
         document.getElementById('guessCountDisplay').hidden = false;
         document.getElementById('winlossDisplay').hidden = true;
+        document.getElementById('averageGuess').hidden = true;
     }
     updateGuessCountDisplay();
 }
@@ -228,6 +230,7 @@ function updateGuessCountDisplay() {
         else document.getElementById('guessCountDisplay').innerHTML = "You Lose! Too Bad!";
 
         document.getElementById('winlossDisplay').innerHTML = "Wins: " + String(numwins) + " Losses: " + String(numlosses);
+        document.getElementById('averageGuess').innerHTML = "Average Guess Count: " + String((totalguesses/(numwins+numlosses)));
     }
     else {
         document.getElementById('guessCountDisplay').innerHTML = "Remaining Guesses: " + current_guesses;
