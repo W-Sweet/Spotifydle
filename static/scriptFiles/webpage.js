@@ -14,7 +14,10 @@ var embedController = null; // embed Controller
 var timeToPlaySongs = [15000, 12000, 8000, 4000, 2000];
 var lastsongselected;  // tracker for the last song selected by spotifydle. intended to prevent players recieving the same song two times in a row randomly
 var allRandomSongs = []; //array containing all random songs of a selected playlist
-var playlistcache; // cache for all the songs in the currently selected playlist
+var playlistcache // cache for all the songs in the currently selected playlist
+var cur_playlist_numsongs = -1;
+var playlistNames = [];
+const playlistNameDisplay = document.getElementById('playlistName'); //variable to hold the element on the webpage that displays the currently hovered playlist name. 
 var cur_playlist_numsongs = -1;
 const dataList = document.getElementById('allRandomSongs');
 // these two stats will only track for a specific instance of a webpage for now. in the futures, these
@@ -71,13 +74,17 @@ document.addEventListener("DOMContentLoaded", function () { // on website load, 
 document.getElementById('playlistImageCover').addEventListener('click', function () { //Fucntion to allow the playlist cover to be pressed, which will cause it to display the next playlist looping back to the first playlist when we reach the last playlist.
     const coverHTML = document.getElementById('playlistImageCover');
     console.log("Playlist cover pressed");
+    console.log(playlistNames);
     if (playlistIndex == (coverURLS.length - 1)) { // we are looking at the final playlist.
-        console.log("We are looking at the final playlist and need to loop back to 0.");
+        console.log(playlistIndex);
         playlistIndex = 0;
+        playlistNameDisplay.innerHTML = playlistNames[0][playlistIndex];
     }
+
     else { // increment by 1. 
-        console.log("We are not looking at the last playlist");
+        console.log(playlistIndex);
         playlistIndex++;
+        playlistNameDisplay.innerHTML = playlistNames[0][playlistIndex];
     }
     coverHTML.src = coverURLS[playlistIndex]; // re-display the playlist on the website. 
     coverHTML.style.display = 'block';
@@ -233,11 +240,14 @@ function updateGuessCountDisplay() {
 */
 
 function loadPlaylists() {
+    console.log("CALL ME WHEN YOUR FEELING DOWN CALL ME WHEN HE'S NOT AROUND")
     document.getElementById('playlistImageCover').hidden = false;
+    playlistNameDisplay.hidden = false;
     fetch('/getPlaylistNames', { method: 'POST' }) // run all playlist names.
         .then(response => response.json())
         .then(data => {
             console.log("PLAYLIST NAMES:", data);
+            playlistNames.push(data);
             // debug line for rendering list of user playlists visible. might delete later.
             if (debug == 1) {
                 document.getElementById('playlistIntro').hidden = false;
@@ -275,7 +285,7 @@ function loadPlaylists() {
     for (let i = 0; i < coverURLS.length - 1; i++)
         coverHTML.src = coverURLS[i]; // set the src of the image on the website, to the selected playlist image. 
     coverHTML.style.display = 'block';
-
+    console.log(playlistNames);
 }
 
 function createEmbed() {
