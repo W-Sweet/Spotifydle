@@ -142,30 +142,6 @@ function guessCheck() {
     //timeToPlaySongsInMS
     if (userGuess === curr_song) {
         console.log("You won, Good Job!"); //debug statement for testing logic
-
-        /* 
-
-        WORKING ON CALCULATING AVERAGE GUESS OF USSSSSSSSSSSSSSSAERR
-        AHHHAHAHHAHAHA
-        AHAHAHHAJ
-        AAAAUUAAH
-        A
-        HAHAHH
-        A
-        HAH
-        AH
-
-        HA
-        HA
-        HA
-        HA
-        HA
-        H
-        HAH
-        AHA
-        H
-
-        */
         totalguesses+= (5 - current_guesses);
         numwins++; //increments the win count to include the current win before rendering
         win_flag = 1;
@@ -230,6 +206,14 @@ function updateGuessCountDisplay() {
         else document.getElementById('guessCountDisplay').innerHTML = "You Lose! Too Bad!";
 
         document.getElementById('winlossDisplay').innerHTML = "Wins: " + String(numwins) + " Losses: " + String(numlosses);
+
+        /*
+        Calculation of the average guess of the user. Definitely scuffed and I'm not sure this is the best way to do this.
+        Currently takes the current number of guesses that the user has made in this instance, and divides it by the nnumber
+        of games the user has played (number of wins + number of losses). Should be easily scalable for data being stored
+        by cookies or a server, just have to take the locally stored variables and send them to the space the stats are being
+        tracked in.
+        */
         document.getElementById('averageGuess').innerHTML = "Average Guess Count: " + String((totalguesses/(numwins+numlosses)));
     }
     else {
