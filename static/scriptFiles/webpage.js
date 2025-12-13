@@ -11,12 +11,17 @@ var win_flag = 0; // flag to let the page know player won game. 0 is false, 1 is
 var has_embed = 0;
 var debug = 1; // flag programmer sets while working on the page. Enable debug rendering on webpage
 var embedController = null; // embed Controller
-var timeToPlaySongs = [15000, 12000, 8000, 4000, 2000]
-var lastsongselected  // tracker for the last song selected by spotifydle. intended to prevent players recieving the same song two times in a row randomly
+var timeToPlaySongs = [15000, 12000, 8000, 4000, 2000];
+var lastsongselected;  // tracker for the last song selected by spotifydle. intended to prevent players recieving the same song two times in a row randomly
 var allRandomSongs = []; //array containing all random songs of a selected playlist
-var playlistcache // cache for all the songs in the currently selected playlist
-var cur_playlist_numsongs = -1
-const dataList = document.getElementById('allRandomSongs')
+var playlistcache; // cache for all the songs in the currently selected playlist
+var cur_playlist_numsongs = -1;
+const dataList = document.getElementById('allRandomSongs');
+// these two stats will only track for a specific instance of a webpage for now. in the futures, these
+// should either be saved in a database or via cookies.
+var numwins = 0;
+var numlosses = 0;
+var totalguesses = 0; //this value is special. used to determine average accuracy. should be saved with other acct info
 
 document.addEventListener("DOMContentLoaded", function () { // on website load, gather all the playlist covers, and dispay them as a rotating wheel on the top of the webpage.
     console.log("Started website")
@@ -125,10 +130,37 @@ function guessCheck() {
     console.log("User Guess:", userGuess); //prints out the user's guess, for debugging purposes
     console.log("Selected Song:", curr_song); //prints out the current song being guessed, for debugging purposes
 
+    current_guesses--;
 
     //timeToPlaySongsInMS
     if (userGuess === curr_song) {
         console.log("You won, Good Job!"); //debug statement for testing logic
+
+        /* 
+
+        WORKING ON CALCULATING AVERAGE GUESS OF USSSSSSSSSSSSSSSAERR
+        AHHHAHAHHAHAHA
+        AHAHAHHAJ
+        AAAAUUAAH
+        A
+        HAHAHH
+        A
+        HAH
+        AH
+
+        HA
+        HA
+        HA
+        HA
+        HA
+        H
+        HAH
+        AHA
+        H
+
+        */
+        totalguesses+= (5 - current_guesses);
+        numwins++; //increments the win count to include the current win before rendering
         win_flag = 1;
         embedController.pause();
         embedController.play();
@@ -137,9 +169,11 @@ function guessCheck() {
 
     else {
         console.log("You SUCK!"); //debug statement for testing logic
-        current_guesses--;
+        
         if (current_guesses == 0) {
             console.log("You Lose, too bad!")
+            totalguesses+= 6;
+            numlosses++; //increments the loss count to include the current loss before rendering
             embedController.pause();
             embedController.play();
             guessCheckToggle(0);
@@ -162,11 +196,13 @@ function guessCheckToggle(status) {
     if (status == 0) {
         current_guesses = -1; //sets the guess counter value to the default
         document.getElementById('userGuessElements').hidden = true;   //hides the guess submit button
+        document.getElementById('winlossDisplay').hidden = false;
     }
     else {
         current_guesses = 5; //sets the guess counter value to the max
         document.getElementById('userGuessElements').hidden = false;  //shows the guess submit button
         document.getElementById('guessCountDisplay').hidden = false;
+        document.getElementById('winlossDisplay').hidden = true;
     }
     updateGuessCountDisplay();
 }
@@ -183,6 +219,8 @@ function updateGuessCountDisplay() {
             win_flag = 0;
         }
         else document.getElementById('guessCountDisplay').innerHTML = "You Lose! Too Bad!";
+
+        document.getElementById('winlossDisplay').innerHTML = "Wins: " + String(numwins) + " Losses: " + String(numlosses);
     }
     else {
         document.getElementById('guessCountDisplay').innerHTML = "Remaining Guesses: " + current_guesses;
